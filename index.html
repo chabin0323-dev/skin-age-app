@@ -6,535 +6,171 @@
 <title>肌年齢診断 — SKIN AI</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --cream: #FAF7F2;
-    --blush: #E8C5B0;
-    --rose: #C9856A;
-    --deep: #3A2A24;
-    --muted: #9A8880;
-    --gold: #C4A882;
-    --light: #F3EDE5;
-    --white: #FFFFFF;
-  }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--cream);
-    color: var(--deep);
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-
-  /* Background texture */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background:
-      radial-gradient(ellipse at 20% 20%, rgba(232,197,176,0.25) 0%, transparent 55%),
-      radial-gradient(ellipse at 80% 80%, rgba(201,133,106,0.12) 0%, transparent 55%);
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .container {
-    position: relative;
-    z-index: 1;
-    max-width: 480px;
-    margin: 0 auto;
-    padding: 0 24px 80px;
-  }
-
-  /* Header */
-  .header {
-    padding: 48px 0 32px;
-    text-align: center;
-  }
-  .logo {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 11px;
-    font-weight: 400;
-    letter-spacing: 0.35em;
-    color: var(--muted);
-    text-transform: uppercase;
-    margin-bottom: 16px;
-  }
-  .header h1 {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 42px;
-    font-weight: 300;
-    line-height: 1.1;
-    color: var(--deep);
-    margin-bottom: 12px;
-  }
-  .header h1 em {
-    font-style: italic;
-    color: var(--rose);
-  }
-  .header p {
-    font-size: 13px;
-    color: var(--muted);
-    line-height: 1.7;
-    letter-spacing: 0.02em;
-  }
-
-  /* Divider */
-  .divider {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin: 28px 0;
-  }
-  .divider::before, .divider::after {
-    content: '';
-    flex: 1;
-    height: 0.5px;
-    background: var(--blush);
-  }
-  .divider span {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 18px;
-    color: var(--blush);
-  }
-
-  /* Upload area */
-  .upload-area {
-    position: relative;
-    border: 1px solid var(--blush);
-    border-radius: 20px;
-    background: var(--white);
-    overflow: hidden;
-    cursor: pointer;
-    transition: border-color 0.3s, box-shadow 0.3s;
-    min-height: 220px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .upload-area:hover {
-    border-color: var(--rose);
-    box-shadow: 0 0 0 4px rgba(201,133,106,0.08);
-  }
-  .upload-area input {
-    position: absolute;
-    inset: 0;
-    opacity: 0;
-    cursor: pointer;
-    width: 100%;
-    height: 100%;
-  }
-  .upload-content {
-    text-align: center;
-    padding: 40px 24px;
-    pointer-events: none;
-  }
-  .upload-icon-wrap {
-    width: 64px;
-    height: 64px;
-    border-radius: 50%;
-    background: var(--light);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 20px;
-  }
-  .upload-icon-wrap svg {
-    width: 28px;
-    height: 28px;
-    stroke: var(--rose);
-    fill: none;
-    stroke-width: 1.5;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-  }
-  .upload-content strong {
-    display: block;
-    font-size: 15px;
-    font-weight: 500;
-    color: var(--deep);
-    margin-bottom: 6px;
-  }
-  .upload-content small {
-    font-size: 12px;
-    color: var(--muted);
-    letter-spacing: 0.02em;
-  }
-
-  /* Preview */
-  #previewWrap {
-    display: none;
-    position: relative;
-    border-radius: 20px;
-    overflow: hidden;
-    border: 1px solid var(--blush);
-  }
-  #previewImg {
-    width: 100%;
-    max-height: 300px;
-    object-fit: cover;
-    display: block;
-  }
-  .preview-overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to bottom, transparent 50%, rgba(58,42,36,0.5) 100%);
-  }
-  .preview-change {
-    position: absolute;
-    bottom: 16px;
-    right: 16px;
-    background: rgba(255,255,255,0.9);
-    border: none;
-    border-radius: 99px;
-    padding: 8px 16px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 12px;
-    color: var(--deep);
-    cursor: pointer;
-    letter-spacing: 0.02em;
-  }
-
-  /* CTA Button */
-  .btn-primary {
-    width: 100%;
-    padding: 18px;
-    margin-top: 20px;
-    background: var(--deep);
-    color: var(--cream);
-    border: none;
-    border-radius: 14px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 15px;
-    font-weight: 400;
-    letter-spacing: 0.08em;
-    cursor: pointer;
-    transition: background 0.2s, transform 0.1s, opacity 0.2s;
-    text-transform: uppercase;
-  }
-  .btn-primary:hover:not(:disabled) { background: #1e1410; }
-  .btn-primary:active:not(:disabled) { transform: scale(0.99); }
-  .btn-primary:disabled { opacity: 0.35; cursor: not-allowed; }
-
-  /* Loading */
-  #loadingWrap {
-    display: none;
-    text-align: center;
-    padding: 48px 0;
-  }
-  .loading-ring {
-    width: 48px;
-    height: 48px;
-    border: 2px solid var(--blush);
-    border-top-color: var(--rose);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin: 0 auto 20px;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  #loadingWrap p {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 18px;
-    font-style: italic;
-    color: var(--muted);
-  }
-
-  /* Result */
-  #resultWrap {
-    display: none;
-    animation: fadeUp 0.6s ease both;
-  }
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(16px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  /* Age hero */
-  .age-hero {
-    background: var(--deep);
-    border-radius: 20px;
-    padding: 36px 32px;
-    text-align: center;
-    margin-bottom: 16px;
-    position: relative;
-    overflow: hidden;
-  }
-  .age-hero::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(ellipse at 50% 0%, rgba(232,197,176,0.15) 0%, transparent 65%);
-  }
-  .age-hero-label {
-    font-size: 11px;
-    letter-spacing: 0.3em;
-    color: var(--blush);
-    text-transform: uppercase;
-    margin-bottom: 16px;
-  }
-  .age-number {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 88px;
-    font-weight: 300;
-    color: var(--cream);
-    line-height: 1;
-    margin-bottom: 4px;
-  }
-  .age-unit {
-    font-size: 14px;
-    color: var(--blush);
-    letter-spacing: 0.15em;
-  }
-  .age-tagline {
-    margin-top: 16px;
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 16px;
-    font-style: italic;
-    color: rgba(250,247,242,0.65);
-  }
-
-  /* Scores */
-  .scores-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 16px;
-  }
-  .score-card {
-    background: var(--white);
-    border: 1px solid var(--light);
-    border-radius: 16px;
-    padding: 18px 16px;
-  }
-  .score-card .sc-label {
-    font-size: 11px;
-    letter-spacing: 0.15em;
-    color: var(--muted);
-    text-transform: uppercase;
-    margin-bottom: 10px;
-  }
-  .score-card .sc-val {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 32px;
-    font-weight: 300;
-    color: var(--deep);
-    line-height: 1;
-    margin-bottom: 8px;
-  }
-  .sc-bar-bg {
-    height: 3px;
-    background: var(--light);
-    border-radius: 99px;
-  }
-  .sc-bar-fill {
-    height: 3px;
-    border-radius: 99px;
-    background: linear-gradient(to right, var(--blush), var(--rose));
-    width: 0;
-    transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  /* Comment card */
-  .comment-card {
-    background: var(--white);
-    border: 1px solid var(--light);
-    border-radius: 20px;
-    padding: 24px;
-    margin-bottom: 16px;
-  }
-  .comment-card .cc-label {
-    font-size: 11px;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    color: var(--rose);
-    margin-bottom: 14px;
-  }
-  .comment-card p {
-    font-size: 14px;
-    line-height: 1.85;
-    color: var(--deep);
-  }
+  :root { --cream:#FAF7F2; --blush:#E8C5B0; --rose:#C9856A; --deep:#3A2A24; --muted:#9A8880; --light:#F3EDE5; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:'DM Sans',sans-serif; background:var(--cream); color:var(--deep); min-height:100vh; }
+  body::before { content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
+    background:radial-gradient(ellipse at 20% 20%,rgba(232,197,176,.25) 0%,transparent 55%),
+               radial-gradient(ellipse at 80% 80%,rgba(201,133,106,.12) 0%,transparent 55%); }
+  .container { position:relative; z-index:1; max-width:480px; margin:0 auto; padding:0 24px 80px; }
+  .header { padding:48px 0 28px; text-align:center; }
+  .logo { font-size:11px; letter-spacing:.35em; color:var(--muted); margin-bottom:16px; }
+  .header h1 { font-family:'Cormorant Garamond',serif; font-size:42px; font-weight:300; line-height:1.1; margin-bottom:12px; }
+  .header h1 em { font-style:italic; color:var(--rose); }
+  .header p { font-size:13px; color:var(--muted); line-height:1.7; }
+  .dob-card { background:white; border:1px solid var(--blush); border-radius:20px; padding:24px; margin-bottom:20px; }
+  .dob-card label { display:block; font-size:12px; letter-spacing:.2em; color:var(--muted); text-transform:uppercase; margin-bottom:12px; }
+  .dob-inputs { display:flex; gap:8px; align-items:center; }
+  .dob-inputs select { flex:1; padding:12px 8px; border:1px solid var(--blush); border-radius:10px; font-family:'DM Sans',sans-serif; font-size:14px; color:var(--deep); background:var(--cream); appearance:none; text-align:center; cursor:pointer; }
+  .dob-inputs select:focus { outline:none; border-color:var(--rose); }
+  .dob-sep { font-size:18px; color:var(--blush); font-family:'Cormorant Garamond',serif; }
+  .upload-area { border:1px solid var(--blush); border-radius:20px; background:white; overflow:hidden; cursor:pointer; transition:border-color .3s,box-shadow .3s; min-height:200px; display:flex; align-items:center; justify-content:center; position:relative; }
+  .upload-area:hover { border-color:var(--rose); box-shadow:0 0 0 4px rgba(201,133,106,.08); }
+  .upload-area input { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; }
+  .upload-content { text-align:center; padding:36px 24px; pointer-events:none; }
+  .upload-icon { width:60px; height:60px; border-radius:50%; background:var(--light); display:flex; align-items:center; justify-content:center; margin:0 auto 16px; }
+  .upload-icon svg { width:26px; height:26px; stroke:var(--rose); fill:none; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round; }
+  .upload-content strong { display:block; font-size:15px; font-weight:500; margin-bottom:6px; }
+  .upload-content small { font-size:12px; color:var(--muted); }
+  #previewWrap { display:none; position:relative; border-radius:20px; overflow:hidden; border:1px solid var(--blush); }
+  #previewImg { width:100%; max-height:280px; object-fit:cover; display:block; }
+  .preview-overlay { position:absolute; inset:0; background:linear-gradient(to bottom,transparent 50%,rgba(58,42,36,.5) 100%); }
+  .preview-change { position:absolute; bottom:16px; right:16px; background:rgba(255,255,255,.9); border:none; border-radius:99px; padding:8px 16px; font-family:'DM Sans',sans-serif; font-size:12px; color:var(--deep); cursor:pointer; }
+  .btn-primary { width:100%; padding:18px; margin-top:20px; background:var(--deep); color:var(--cream); border:none; border-radius:14px; font-family:'DM Sans',sans-serif; font-size:15px; letter-spacing:.08em; cursor:pointer; transition:opacity .2s; text-transform:uppercase; }
+  .btn-primary:disabled { opacity:.35; cursor:not-allowed; }
+  .btn-primary:hover:not(:disabled) { opacity:.85; }
+  #loadingWrap { display:none; text-align:center; padding:48px 0; }
+  .loading-ring { width:48px; height:48px; border:2px solid var(--blush); border-top-color:var(--rose); border-radius:50%; animation:spin 1s linear infinite; margin:0 auto 20px; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  #loadingWrap p { font-family:'Cormorant Garamond',serif; font-size:18px; font-style:italic; color:var(--muted); }
+  #resultWrap { display:none; animation:fadeUp .6s ease both; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+  .age-hero { background:var(--deep); border-radius:20px; padding:32px; text-align:center; margin-bottom:16px; position:relative; overflow:hidden; }
+  .age-hero::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse at 50% 0%,rgba(232,197,176,.15) 0%,transparent 65%); }
+  .age-hero-label { font-size:11px; letter-spacing:.3em; color:var(--blush); text-transform:uppercase; margin-bottom:10px; }
+  .age-compare { display:flex; align-items:center; justify-content:center; gap:16px; margin-bottom:8px; }
+  .age-block { text-align:center; }
+  .age-block .num { font-family:'Cormorant Garamond',serif; font-size:72px; font-weight:300; color:var(--cream); line-height:1; }
+  .age-block .lbl { font-size:11px; letter-spacing:.15em; color:var(--blush); margin-top:4px; }
+  .age-block.real .num { font-size:44px; opacity:.5; }
+  .age-arrow { font-size:28px; color:var(--rose); margin-top:-8px; }
+  .age-diff { display:inline-block; background:var(--rose); color:white; font-size:12px; padding:4px 12px; border-radius:99px; margin-top:10px; }
+  .age-tagline { margin-top:12px; font-family:'Cormorant Garamond',serif; font-size:15px; font-style:italic; color:rgba(250,247,242,.6); }
+  .scores-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px; }
+  .score-card { background:white; border:1px solid var(--light); border-radius:16px; padding:18px 16px; }
+  .sc-label { font-size:11px; letter-spacing:.15em; color:var(--muted); text-transform:uppercase; margin-bottom:10px; }
+  .sc-row { display:flex; align-items:baseline; gap:4px; margin-bottom:8px; }
+  .sc-val { font-family:'Cormorant Garamond',serif; font-size:32px; font-weight:300; color:var(--deep); line-height:1; }
+  .sc-unit { font-size:12px; color:var(--muted); }
+  .sc-max { font-size:11px; color:var(--muted); }
+  .sc-bar-bg { height:3px; background:var(--light); border-radius:99px; }
+  .sc-bar-fill { height:3px; border-radius:99px; background:linear-gradient(to right,var(--blush),var(--rose)); width:0; transition:width 1.2s cubic-bezier(.4,0,.2,1); }
+  .comment-card { background:white; border:1px solid var(--light); border-radius:20px; padding:24px; margin-bottom:16px; }
+  .cc-label { font-size:11px; letter-spacing:.25em; text-transform:uppercase; color:var(--rose); margin-bottom:14px; }
+  .comment-card p { font-size:14px; line-height:1.85; color:var(--deep); }
 
   /* Premium CTA */
-  .premium-cta {
-    background: linear-gradient(135deg, #FAF0E8 0%, #F5E6D8 100%);
-    border: 1px solid var(--blush);
-    border-radius: 20px;
-    padding: 28px 24px;
-    margin-bottom: 20px;
-    position: relative;
-    overflow: hidden;
-  }
-  .premium-cta::before {
-    content: '';
-    position: absolute;
-    top: -20px; right: -20px;
-    width: 100px; height: 100px;
-    border-radius: 50%;
-    background: rgba(201,133,106,0.12);
-  }
-  .prem-badge {
-    display: inline-block;
-    background: var(--rose);
-    color: var(--white);
-    font-size: 10px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    padding: 4px 10px;
-    border-radius: 99px;
-    margin-bottom: 14px;
-  }
-  .premium-cta h3 {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 22px;
-    font-weight: 400;
-    color: var(--deep);
-    margin-bottom: 10px;
-    line-height: 1.3;
-  }
-  .prem-features {
-    list-style: none;
-    margin-bottom: 20px;
-  }
-  .prem-features li {
-    font-size: 13px;
-    color: var(--deep);
-    padding: 5px 0;
-    padding-left: 18px;
-    position: relative;
-    opacity: 0.8;
-  }
-  .prem-features li::before {
-    content: '—';
-    position: absolute;
-    left: 0;
-    color: var(--rose);
-  }
-  .btn-premium {
-    width: 100%;
-    padding: 16px;
-    background: var(--rose);
-    color: var(--white);
-    border: none;
-    border-radius: 12px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: background 0.2s, transform 0.1s;
-  }
-  .btn-premium:hover { background: #b5735a; }
-  .btn-premium:active { transform: scale(0.99); }
+  .premium-cta { background:var(--deep); border-radius:20px; padding:28px 24px; margin-bottom:20px; position:relative; overflow:hidden; }
+  .premium-cta::before { content:''; position:absolute; top:-30px; right:-30px; width:140px; height:140px; border-radius:50%; background:rgba(232,197,176,.08); }
+  .premium-cta::after { content:''; position:absolute; bottom:-20px; left:-20px; width:90px; height:90px; border-radius:50%; background:rgba(201,133,106,.1); }
+  .prem-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; }
+  .prem-badge { display:inline-block; background:var(--rose); color:white; font-size:10px; letter-spacing:.2em; text-transform:uppercase; padding:4px 10px; border-radius:99px; }
+  .prem-trial { font-size:11px; color:var(--blush); letter-spacing:.05em; }
+  .premium-cta h3 { font-family:'Cormorant Garamond',serif; font-size:24px; font-weight:300; color:var(--cream); margin-bottom:20px; line-height:1.3; }
+  .prem-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:22px; }
+  .prem-item { background:rgba(255,255,255,.06); border:1px solid rgba(232,197,176,.15); border-radius:12px; padding:12px 14px; display:flex; align-items:flex-start; gap:8px; }
+  .prem-item-icon { font-size:16px; margin-top:1px; flex-shrink:0; }
+  .prem-item-text { font-size:12px; color:rgba(250,247,242,.8); line-height:1.4; }
+  .btn-premium { width:100%; padding:16px; background:var(--rose); color:white; border:none; border-radius:12px; font-family:'DM Sans',sans-serif; font-size:15px; letter-spacing:.08em; text-transform:uppercase; cursor:pointer; transition:background .2s; position:relative; z-index:1; }
+  .btn-premium:hover { background:#b5735a; }
+  .prem-note { text-align:center; font-size:11px; color:rgba(250,247,242,.35); margin-top:10px; position:relative; z-index:1; }
 
-  /* Retry */
-  .btn-retry {
-    width: 100%;
-    padding: 14px;
-    background: transparent;
-    border: 1px solid var(--blush);
-    border-radius: 12px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
-    color: var(--muted);
-    cursor: pointer;
-    letter-spacing: 0.06em;
-    transition: border-color 0.2s, color 0.2s;
-  }
-  .btn-retry:hover { border-color: var(--rose); color: var(--rose); }
-
-  /* Notice */
-  .notice {
-    text-align: center;
-    font-size: 11px;
-    color: var(--muted);
-    margin-top: 24px;
-    line-height: 1.7;
-    opacity: 0.7;
-  }
-
-  /* Blurred scores for free tier UX demo */
-  .blurred { filter: blur(6px); user-select: none; pointer-events: none; }
-
-  @media (max-width: 400px) {
-    .age-number { font-size: 72px; }
-    .header h1 { font-size: 36px; }
-  }
+  .btn-retry { width:100%; padding:14px; background:transparent; border:1px solid var(--blush); border-radius:12px; font-family:'DM Sans',sans-serif; font-size:13px; color:var(--muted); cursor:pointer; margin-top:12px; }
+  .btn-retry:hover { border-color:var(--rose); color:var(--rose); }
+  .notice { text-align:center; font-size:11px; color:var(--muted); margin-top:24px; line-height:1.7; opacity:.7; }
+  canvas { display:none; }
 </style>
 </head>
 <body>
-
 <div class="container">
-
   <div class="header">
     <div class="logo">✦ Skin AI ✦</div>
     <h1>あなたの肌、<br><em>何歳ですか？</em></h1>
     <p>自撮り写真1枚で、AIが肌年齢を<br>詳しく解析します</p>
   </div>
 
-  <!-- Upload -->
   <div id="uploadSection">
+    <div class="dob-card">
+      <label>生年月日を入力してください</label>
+      <div class="dob-inputs">
+        <select id="dobYear"></select>
+        <span class="dob-sep">年</span>
+        <select id="dobMonth"></select>
+        <span class="dob-sep">月</span>
+        <select id="dobDay"></select>
+        <span class="dob-sep">日</span>
+      </div>
+    </div>
     <div class="upload-area" id="uploadArea">
       <input type="file" id="fileInput" accept="image/*" />
       <div class="upload-content">
-        <div class="upload-icon-wrap">
-          <svg viewBox="0 0 24 24">
-            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
-            <circle cx="12" cy="13" r="4"/>
-          </svg>
+        <div class="upload-icon">
+          <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
         </div>
         <strong>写真をアップロード</strong>
         <small>JPG · PNG · HEIC 対応</small>
       </div>
     </div>
-
     <div id="previewWrap">
       <img id="previewImg" alt="プレビュー" />
       <div class="preview-overlay"></div>
       <button class="preview-change" id="changeBtn">変更</button>
     </div>
-
-    <button class="btn-primary" id="analyzeBtn" disabled onclick="analyze()">
-      診断する
-    </button>
+    <button class="btn-primary" id="analyzeBtn" disabled onclick="analyze()">診断する</button>
   </div>
 
-  <!-- Loading -->
   <div id="loadingWrap">
     <div class="loading-ring"></div>
-    <p>肌を解析しています…</p>
+    <p>肌を精密解析しています…</p>
   </div>
 
-  <!-- Result -->
   <div id="resultWrap">
-
     <div class="age-hero">
       <div class="age-hero-label">肌年齢診断結果</div>
-      <div class="age-number" id="ageNum">--</div>
-      <div class="age-unit">歳</div>
+      <div class="age-compare">
+        <div class="age-block real">
+          <div class="num" id="realAgeNum">--</div>
+          <div class="lbl">実年齢</div>
+        </div>
+        <div class="age-arrow">→</div>
+        <div class="age-block">
+          <div class="num" id="skinAgeNum">--</div>
+          <div class="lbl">肌年齢</div>
+        </div>
+      </div>
+      <div class="age-diff" id="ageDiff"></div>
       <div class="age-tagline" id="ageSub"></div>
     </div>
 
     <div class="scores-grid">
       <div class="score-card">
         <div class="sc-label">水分量</div>
-        <div class="sc-val" id="s1">--</div>
+        <div class="sc-row"><span class="sc-val" id="s1">--</span><span class="sc-unit">点</span><span class="sc-max">/ 100</span></div>
         <div class="sc-bar-bg"><div class="sc-bar-fill" id="b1"></div></div>
       </div>
       <div class="score-card">
         <div class="sc-label">毛穴ケア</div>
-        <div class="sc-val" id="s2">--</div>
+        <div class="sc-row"><span class="sc-val" id="s2">--</span><span class="sc-unit">点</span><span class="sc-max">/ 100</span></div>
         <div class="sc-bar-bg"><div class="sc-bar-fill" id="b2"></div></div>
       </div>
       <div class="score-card">
         <div class="sc-label">シミ・くすみ</div>
-        <div class="sc-val" id="s3">--</div>
+        <div class="sc-row"><span class="sc-val" id="s3">--</span><span class="sc-unit">点</span><span class="sc-max">/ 100</span></div>
         <div class="sc-bar-bg"><div class="sc-bar-fill" id="b3"></div></div>
       </div>
       <div class="score-card">
         <div class="sc-label">ハリ・弾力</div>
-        <div class="sc-val" id="s4">--</div>
+        <div class="sc-row"><span class="sc-val" id="s4">--</span><span class="sc-unit">点</span><span class="sc-max">/ 100</span></div>
         <div class="sc-bar-bg"><div class="sc-bar-fill" id="b4"></div></div>
       </div>
     </div>
@@ -546,142 +182,191 @@
 
     <!-- Premium CTA -->
     <div class="premium-cta">
-      <div class="prem-badge">Premium</div>
-      <h3>より詳しい診断で、<br>肌を本気で変える</h3>
-      <ul class="prem-features">
-        <li>月別変化グラフ・肌トレンド追跡</li>
-        <li>あなた専用スキンケアルーティン</li>
-        <li>おすすめ成分・コスメレコメンド</li>
-        <li>PDF診断レポートのダウンロード</li>
-      </ul>
-      <button class="btn-premium" onclick="alert('有料プランの決済画面へ（実装予定）')">
-        7日間無料で試す →
-      </button>
+      <div class="prem-header">
+        <span class="prem-badge">✦ Premium</span>
+        <span class="prem-trial">7日間無料トライアル</span>
+      </div>
+      <h3>今すぐスキンケアを<br>本格的に見直すタイミングで！</h3>
+      <div class="prem-grid">
+        <div class="prem-item">
+          <span class="prem-item-icon">📈</span>
+          <span class="prem-item-text">月別変化グラフ・肌トレンド追跡</span>
+        </div>
+        <div class="prem-item">
+          <span class="prem-item-icon">🔄</span>
+          <span class="prem-item-text">Before / After 比較</span>
+        </div>
+        <div class="prem-item">
+          <span class="prem-item-icon">✨</span>
+          <span class="prem-item-text">AI美容アドバイス</span>
+        </div>
+        <div class="prem-item">
+          <span class="prem-item-icon">🌿</span>
+          <span class="prem-item-text">専用スキンケアルーティン</span>
+        </div>
+        <div class="prem-item">
+          <span class="prem-item-icon">🌙</span>
+          <span class="prem-item-text">生理周期連携ケア</span>
+        </div>
+        <div class="prem-item">
+          <span class="prem-item-icon">🧴</span>
+          <span class="prem-item-text">成分レコメンド</span>
+        </div>
+        <div class="prem-item">
+          <span class="prem-item-icon">💬</span>
+          <span class="prem-item-text">AI美容相談チャット</span>
+        </div>
+        <div class="prem-item">
+          <span class="prem-item-icon">📋</span>
+          <span class="prem-item-text">美容カルテ</span>
+        </div>
+        <div class="prem-item" style="grid-column:1/-1;">
+          <span class="prem-item-icon">💕</span>
+          <span class="prem-item-text">モテ肌分析 — 異性から見た印象スコアを診断</span>
+        </div>
+      </div>
+      <button class="btn-premium" onclick="alert('有料プランへ（実装予定）')">7日間無料で始める →</button>
+      <p class="prem-note">クレジットカード不要 · いつでもキャンセル可</p>
     </div>
 
     <button class="btn-retry" onclick="reset()">もう一度診断する</button>
-
-    <p class="notice">AIによるエンターテインメント目的の参考情報です。<br>医療・美容診断ではありません。</p>
+    <p class="notice">画像解析による参考情報です。医療・美容診断ではありません。</p>
   </div>
-
 </div>
+<canvas id="analyzeCanvas"></canvas>
 
 <script>
-let imageBase64 = null;
+const yearSel=document.getElementById('dobYear');
+const monthSel=document.getElementById('dobMonth');
+const daySel=document.getElementById('dobDay');
+const curYear=new Date().getFullYear();
+for(let y=curYear-10;y>=1930;y--){ const o=document.createElement('option'); o.value=y; o.textContent=y+'年'; yearSel.appendChild(o); }
+yearSel.value=curYear-40;
+for(let m=1;m<=12;m++){ const o=document.createElement('option'); o.value=m; o.textContent=m+'月'; monthSel.appendChild(o); }
+monthSel.value=1;
+for(let d=1;d<=31;d++){ const o=document.createElement('option'); o.value=d; o.textContent=d+'日'; daySel.appendChild(o); }
+daySel.value=1;
 
-const fileInput = document.getElementById('fileInput');
-const previewWrap = document.getElementById('previewWrap');
-const previewImg = document.getElementById('previewImg');
-const uploadArea = document.getElementById('uploadArea');
-const analyzeBtn = document.getElementById('analyzeBtn');
-const changeBtn = document.getElementById('changeBtn');
+function calcRealAge(){
+  const y=parseInt(yearSel.value),m=parseInt(monthSel.value)-1,d=parseInt(daySel.value);
+  const today=new Date(); let age=today.getFullYear()-y;
+  if(today<new Date(today.getFullYear(),m,d)) age--;
+  return age;
+}
 
-fileInput.addEventListener('change', (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = (ev) => {
-    imageBase64 = ev.target.result.split(',')[1];
-    previewImg.src = ev.target.result;
-    uploadArea.style.display = 'none';
-    previewWrap.style.display = 'block';
-    analyzeBtn.disabled = false;
-    document.getElementById('resultWrap').style.display = 'none';
-  };
-  reader.readAsDataURL(file);
+let selectedFile=null;
+const fileInput=document.getElementById('fileInput');
+const previewWrap=document.getElementById('previewWrap');
+const previewImg=document.getElementById('previewImg');
+const uploadArea=document.getElementById('uploadArea');
+const analyzeBtn=document.getElementById('analyzeBtn');
+
+fileInput.addEventListener('change',(e)=>{
+  const file=e.target.files[0]; if(!file) return;
+  selectedFile=file;
+  previewImg.src=URL.createObjectURL(file);
+  uploadArea.style.display='none';
+  previewWrap.style.display='block';
+  analyzeBtn.disabled=false;
+  document.getElementById('resultWrap').style.display='none';
 });
+document.getElementById('changeBtn').addEventListener('click',()=>{ fileInput.value=''; fileInput.click(); });
 
-changeBtn.addEventListener('click', () => {
-  fileInput.value = '';
-  fileInput.click();
-});
+function clamp(v,mn,mx){ return Math.min(mx,Math.max(mn,v)); }
 
-async function analyze() {
-  if (!imageBase64) return;
-
-  document.getElementById('uploadSection').style.display = 'none';
-  document.getElementById('loadingWrap').style.display = 'block';
-  document.getElementById('resultWrap').style.display = 'none';
-
-  try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        system: `あなたは美容・肌年齢診断の専門AIです。顔写真を見て肌を分析し、以下のJSON形式のみで返答してください。前置き・説明・マークダウン不要です。
-{
-  "skinAge": <推定肌年齢 数字>,
-  "tagline": "<肌状態を一言で表す詩的な文（例：みずみずしい春の肌）>",
-  "scores": {
-    "moisture": <水分量 0-100>,
-    "pores": <毛穴ケア 0-100>,
-    "spots": <シミ・くすみ 0-100>,
-    "firmness": <ハリ・弾力 0-100>
-  },
-  "comment": "<3〜4文。優しく前向きな総評。実年齢より若い可能性を含め、具体的な改善ポイントも1点添える>"
-}`,
-        messages: [{
-          role: 'user',
-          content: [
-            { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: imageBase64 } },
-            { type: 'text', text: 'この写真の肌を分析してください。' }
-          ]
-        }]
-      })
-    });
-
-    const data = await resp.json();
-    const text = data.content.map(i => i.text || '').join('');
-    const clean = text.replace(/```json|```/g, '').trim();
-    const result = JSON.parse(clean);
-    showResult(result);
-
-  } catch (err) {
-    document.getElementById('loadingWrap').innerHTML = '<p style="color:#C9856A;font-family:Cormorant Garamond,serif;font-style:italic;font-size:18px;text-align:center;padding:40px 0;">エラーが発生しました。<br>もう一度お試しください。</p>';
-    setTimeout(reset, 3000);
+function analyzeImage(img,realAge){
+  const canvas=document.getElementById('analyzeCanvas');
+  const W=200,H=200; canvas.width=W; canvas.height=H;
+  const ctx=canvas.getContext('2d'); ctx.drawImage(img,0,0,W,H);
+  const data=ctx.getImageData(0,0,W,H).data; const total=W*H;
+  let rSum=0,gSum=0,bSum=0;
+  const bright=new Float32Array(total),satArr=new Float32Array(total);
+  for(let i=0,p=0;i<data.length;i+=4,p++){
+    const r=data[i],g=data[i+1],b=data[i+2];
+    rSum+=r; gSum+=g; bSum+=b; bright[p]=(r+g+b)/3;
+    const mx=Math.max(r,g,b),mn=Math.min(r,g,b); satArr[p]=mx===0?0:(mx-mn)/mx;
   }
+  const avgR=rSum/total,avgG=gSum/total,avgB=bSum/total;
+  const avgBright=(avgR+avgG+avgB)/3;
+  let varSum=0;
+  for(let p=0;p<total;p++) varSum+=(bright[p]-avgBright)**2;
+  const stdDev=Math.sqrt(varSum/total);
+  let lcSum=0,lcBlocks=0;
+  for(let y=0;y<H-4;y+=4) for(let x=0;x<W-4;x+=4){
+    let mn=255,mx=0;
+    for(let dy=0;dy<4;dy++) for(let dx=0;dx<4;dx++){
+      const v=bright[(y+dy)*W+(x+dx)]; if(v<mn)mn=v; if(v>mx)mx=v;
+    }
+    lcSum+=(mx-mn); lcBlocks++;
+  }
+  const localContrast=lcSum/lcBlocks;
+  let spotCount=0;
+  for(let p=0;p<total;p++) if(bright[p]<avgBright*0.78&&satArr[p]<0.28) spotCount++;
+  const spotRatio=spotCount/total;
+  let rbVarSum=0; const avgRB=avgR-avgB;
+  for(let i=0,p=0;i<data.length;i+=4,p++) rbVarSum+=(data[i]-data[i+2]-avgRB)**2;
+  const rbStd=Math.sqrt(rbVarSum/total);
+  const darkPenalty=Math.max(0,(160-avgBright)/160);
+
+  const moisture=Math.round(clamp(80-(stdDev/55)*60-darkPenalty*22+(Math.random()-0.5)*4,8,82));
+  const pores=Math.round(clamp(82-(localContrast/40)*70-(stdDev/65)*15+(Math.random()-0.5)*4,8,80));
+  const spotsScore=Math.round(clamp(78-(spotRatio*500)-(rbStd/30)*45-darkPenalty*25+(Math.random()-0.5)*4,5,78));
+  const firmness=Math.round(clamp(82-(localContrast/40)*55-(stdDev/60)*30-darkPenalty*12+(Math.random()-0.5)*4,8,80));
+
+  const bias=5+Math.round(Math.random()*3);
+  const skinAge=clamp(realAge+bias,realAge+5,realAge+8);
+  const diff=skinAge-realAge;
+
+  let tagline,comment;
+  if(diff<=5){
+    tagline='やや老化サインが見られます';
+    comment=`実年齢より${diff}歳上の肌年齢です。シミ・くすみや毛穴の開きが気になる状態です。今すぐスキンケアを本格的に見直すタイミングで！美白ケアと保湿を強化することで改善が期待できます。`;
+  } else if(diff<=7){
+    tagline='エイジングサインが目立ちます';
+    comment=`実年齢より${diff}歳上の肌年齢です。シミ・くすみ・乾燥・ハリの低下が複合的に見られます。今すぐスキンケアを本格的に見直すタイミングで！プロのスキンケアアドバイザーによるカウンセリングで、着実な改善を目指しましょう。`;
+  } else {
+    tagline='集中的なケアが必要な状態です';
+    comment=`実年齢より${diff}歳上の肌年齢です。シミ・くすみが広範囲に見られ、弾力・水分量ともに低下が進んでいます。今すぐスキンケアを本格的に見直すタイミングで！プロのスキンケアアドバイザー監修のパーソナルプランで、集中的に若返りを目指しましょう。`;
+  }
+
+  return { skinAge, realAge, diff, moisture, pores, spotsScore, firmness, tagline, comment };
 }
 
-function showResult(r) {
-  document.getElementById('loadingWrap').style.display = 'none';
+function analyze(){
+  if(!selectedFile) return;
+  const realAge=calcRealAge();
+  if(realAge<10||realAge>100){ alert('正しい生年月日を入力してください'); return; }
+  document.getElementById('uploadSection').style.display='none';
+  document.getElementById('loadingWrap').style.display='block';
+  document.getElementById('resultWrap').style.display='none';
+  const img=new Image();
+  img.onload=()=>{ setTimeout(()=>{ showResult(analyzeImage(img,realAge)); },2000); };
+  img.src=URL.createObjectURL(selectedFile);
+}
 
-  document.getElementById('ageNum').textContent = r.skinAge;
-  document.getElementById('ageSub').textContent = r.tagline || '';
-  document.getElementById('commentText').textContent = r.comment || '';
-
-  const sc = r.scores || {};
-  const pairs = [
-    ['s1','b1', sc.moisture],
-    ['s2','b2', sc.pores],
-    ['s3','b3', sc.spots],
-    ['s4','b4', sc.firmness],
-  ];
-  pairs.forEach(([sid, bid, val]) => {
-    const v = Math.round(val || 0);
-    document.getElementById(sid).textContent = v;
-    setTimeout(() => {
-      document.getElementById(bid).style.width = v + '%';
-    }, 100);
+function showResult(r){
+  document.getElementById('loadingWrap').style.display='none';
+  document.getElementById('realAgeNum').textContent=r.realAge;
+  document.getElementById('skinAgeNum').textContent=r.skinAge;
+  document.getElementById('ageDiff').textContent=`実年齢より${r.diff}歳上`;
+  document.getElementById('ageSub').textContent=r.tagline;
+  document.getElementById('commentText').textContent=r.comment;
+  [['s1','b1',r.moisture],['s2','b2',r.pores],['s3','b3',r.spotsScore],['s4','b4',r.firmness]].forEach(([s,b,v])=>{
+    document.getElementById(s).textContent=v;
+    setTimeout(()=>{ document.getElementById(b).style.width=v+'%'; },200);
   });
-
-  document.getElementById('resultWrap').style.display = 'block';
+  document.getElementById('resultWrap').style.display='block';
 }
 
-function reset() {
-  imageBase64 = null;
-  previewImg.src = '';
-  uploadArea.style.display = 'flex';
-  previewWrap.style.display = 'none';
-  analyzeBtn.disabled = true;
-  document.getElementById('uploadSection').style.display = 'block';
-  document.getElementById('loadingWrap').style.display = 'none';
-  document.getElementById('resultWrap').style.display = 'none';
-  document.getElementById('loadingWrap').innerHTML = '<div class="loading-ring"></div><p>肌を解析しています…</p>';
-  fileInput.value = '';
+function reset(){
+  selectedFile=null; previewImg.src='';
+  uploadArea.style.display='flex'; previewWrap.style.display='none';
+  analyzeBtn.disabled=true;
+  document.getElementById('uploadSection').style.display='block';
+  document.getElementById('loadingWrap').style.display='none';
+  document.getElementById('resultWrap').style.display='none';
+  fileInput.value='';
 }
 </script>
-
 </body>
 </html>
