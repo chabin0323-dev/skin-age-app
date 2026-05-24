@@ -137,6 +137,7 @@
         </div>
         <strong>写真をアップロード</strong>
         <small>JPG · PNG · HEIC 対応</small>
+        <small style="display:block;margin-top:6px;font-size:11px;color:#9A8880;">📱 あなたのスマホ内の写真のみ使用。外部送信はしません。</small>
       </div>
     </div>
     <div id="previewWrap">
@@ -180,7 +181,7 @@
         <span class="prem-trial">7日間無料トライアル</span>
       </div>
       <h3>肌年齢を若返らせる<br>本格ケアを始めよう</h3>
-      <p class="prem-sub">無料診断で分かった課題を、プレミアムで解決。<br>あなた専用のケアプランで確実に改善できます。</p>
+      <p class="prem-sub">無料診断で分かった課題を、プレミアムで解決。<br>あなたの肌状態に合わせたケアプランで、理想の肌へ近づくサポートをします。</p>
       <div class="prem-grid">
         <div class="prem-item"><span class="prem-item-icon">📈</span><span class="prem-item-text">月別変化グラフ・肌トレンド追跡</span></div>
         <div class="prem-item"><span class="prem-item-icon">🔄</span><span class="prem-item-text">Before / After 比較</span></div>
@@ -193,7 +194,7 @@
         <div class="prem-item" style="grid-column:1/-1;"><span class="prem-item-icon">💕</span><span class="prem-item-text">モテ肌分析 — 異性から見た印象スコアを診断</span></div>
       </div>
       <button class="btn-premium" onclick="openModal()">プランを見る・登録する →</button>
-      <p class="prem-note">クレジットカード不要 · いつでもキャンセル可</p>
+      
     </div>
 
     <button class="btn-retry" onclick="reset()">もう一度診断する</button>
@@ -226,7 +227,7 @@
         <li>美容カルテ</li>
         <li>モテ肌分析</li>
       </ul>
-      <button class="btn-plan main" onclick="alert('決済システム連携後に有効になります')">7日間無料で始める</button>
+      <div id="paypal-button-container-P-7A434972FV004594LNIJE5XA" style="margin-top:14px;"></div>
     </div>
 
     <div class="plan-card">
@@ -366,6 +367,19 @@ function reset(){
   document.getElementById('resultWrap').style.display='none';
   fileInput.value='';
 }
+</script>
+<script src="https://www.paypal.com/sdk/js?client-id=AfUn22zK4UsNWfThHlT_1sqvEi8gmtXHZ4jWMYafWPrX4bBorPFvMY8ZTuZAqTfVXygpK95YmdkZsj-N&vault=true&intent=subscription" data-sdk-integration-source="button-factory"></script>
+<script>
+  paypal.Buttons({
+    style: { shape:'rect', color:'gold', layout:'vertical', label:'subscribe' },
+    createSubscription: function(data, actions) {
+      return actions.subscription.create({ plan_id: 'P-7A434972FV004594LNIJE5XA' });
+    },
+    onApprove: function(data, actions) {
+      closeModal();
+      document.getElementById('resultWrap').innerHTML += '<div style="background:#3A2A24;color:#FAF7F2;border-radius:16px;padding:20px;text-align:center;margin-top:16px;"><div style="font-size:20px;margin-bottom:8px;">🎉 登録完了！</div><div style="font-size:13px;opacity:0.8;">ライトプランへようこそ！<br>サブスクリプションID: ' + data.subscriptionID + '</div></div>';
+    }
+  }).render('#paypal-button-container-P-7A434972FV004594LNIJE5XA');
 </script>
 </body>
 </html>
