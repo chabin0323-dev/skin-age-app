@@ -209,6 +209,22 @@
     <h2>プランを選ぶ</h2>
     <p class="modal-sub">7日間は完全無料。気に入らなければいつでもキャンセルできます。</p>
 
+    <!-- ライトプラン -->
+    <div class="plan-card">
+      <div class="plan-header">
+        <span class="plan-name">ライトプラン</span>
+      </div>
+      <div class="plan-price">¥480<span> / 月</span></div>
+      <div class="plan-desc">最初の7日間は無料。いつでも解約OK。</div>
+      <ul class="plan-features">
+        <li>肌年齢診断（月5回まで）</li>
+        <li>月別変化グラフ</li>
+        <li>美容カルテ</li>
+      </ul>
+      <div id="paypal-button-container-P-7A434972FV004594LNIJE5XA" style="margin-top:14px;"></div>
+    </div>
+
+    <!-- プレミアムプラン月払い -->
     <div class="plan-card featured">
       <div class="plan-header">
         <span class="plan-name">プレミアムプラン</span>
@@ -217,6 +233,7 @@
       <div class="plan-price">¥980<span> / 月</span></div>
       <div class="plan-desc">最初の7日間は無料。いつでも解約OK。</div>
       <ul class="plan-features">
+        <li>肌年齢診断（無制限）</li>
         <li>月別変化グラフ・肌トレンド追跡</li>
         <li>Before / After 比較</li>
         <li>AI美容アドバイス（毎日更新）</li>
@@ -227,9 +244,26 @@
         <li>美容カルテ</li>
         <li>モテ肌分析</li>
       </ul>
-      <div id="paypal-button-container-P-7A434972FV004594LNIJE5XA" style="margin-top:14px;"></div>
+      <div id="paypal-button-container-P-97V00018FX1263937NIJFLMA" style="margin-top:14px;"></div>
     </div>
 
+    <!-- プレミアム年払い -->
+    <div class="plan-card">
+      <div class="plan-header">
+        <span class="plan-name">プレミアム年払い</span>
+        <span class="plan-best" style="background:#C4A882;">お得</span>
+      </div>
+      <div class="plan-price">¥7,800<span> / 年</span></div>
+      <div class="plan-desc">月650円相当。2ヶ月分お得！最初の7日間は無料。</div>
+      <ul class="plan-features">
+        <li>プレミアムプランの全機能</li>
+        <li>年間まとめ美容レポート</li>
+        <li>優先サポート</li>
+      </ul>
+      <div id="paypal-button-container-P-1HV82856NV161684BNIJFNFY" style="margin-top:14px;"></div>
+    </div>
+
+    <!-- 無料プラン -->
     <div class="plan-card">
       <div class="plan-header">
         <span class="plan-name">無料プラン</span>
@@ -370,16 +404,47 @@ function reset(){
 </script>
 <script src="https://www.paypal.com/sdk/js?client-id=AfUn22zK4UsNWfThHlT_1sqvEi8gmtXHZ4jWMYafWPrX4bBorPFvMY8ZTuZAqTfVXygpK95YmdkZsj-N&vault=true&intent=subscription" data-sdk-integration-source="button-factory"></script>
 <script>
+  const btnStyle = { shape:'rect', color:'gold', layout:'vertical', label:'subscribe' };
+
+  // ライトプラン
   paypal.Buttons({
-    style: { shape:'rect', color:'gold', layout:'vertical', label:'subscribe' },
+    style: btnStyle,
     createSubscription: function(data, actions) {
       return actions.subscription.create({ plan_id: 'P-7A434972FV004594LNIJE5XA' });
     },
     onApprove: function(data, actions) {
       closeModal();
-      document.getElementById('resultWrap').innerHTML += '<div style="background:#3A2A24;color:#FAF7F2;border-radius:16px;padding:20px;text-align:center;margin-top:16px;"><div style="font-size:20px;margin-bottom:8px;">🎉 登録完了！</div><div style="font-size:13px;opacity:0.8;">ライトプランへようこそ！<br>サブスクリプションID: ' + data.subscriptionID + '</div></div>';
+      showSuccess('ライトプランへようこそ！', data.subscriptionID);
     }
   }).render('#paypal-button-container-P-7A434972FV004594LNIJE5XA');
+
+  // プレミアムプラン月払い
+  paypal.Buttons({
+    style: btnStyle,
+    createSubscription: function(data, actions) {
+      return actions.subscription.create({ plan_id: 'P-97V00018FX1263937NIJFLMA' });
+    },
+    onApprove: function(data, actions) {
+      closeModal();
+      showSuccess('プレミアムプランへようこそ！', data.subscriptionID);
+    }
+  }).render('#paypal-button-container-P-97V00018FX1263937NIJFLMA');
+
+  // プレミアム年払い
+  paypal.Buttons({
+    style: btnStyle,
+    createSubscription: function(data, actions) {
+      return actions.subscription.create({ plan_id: 'P-1HV82856NV161684BNIJFNFY' });
+    },
+    onApprove: function(data, actions) {
+      closeModal();
+      showSuccess('プレミアム年払いプランへようこそ！', data.subscriptionID);
+    }
+  }).render('#paypal-button-container-P-1HV82856NV161684BNIJFNFY');
+
+  function showSuccess(planName, subId) {
+    document.getElementById('resultWrap').innerHTML += '<div style="background:#3A2A24;color:#FAF7F2;border-radius:16px;padding:20px;text-align:center;margin-top:16px;"><div style="font-size:22px;margin-bottom:8px;">🎉 登録完了！</div><div style="font-size:14px;opacity:0.9;margin-bottom:6px;">' + planName + '</div><div style="font-size:11px;opacity:0.5;">ID: ' + subId + '</div></div>';
+  }
 </script>
 </body>
 </html>
