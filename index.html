@@ -85,6 +85,8 @@
   .prem-note { text-align:center; font-size:11px; color:rgba(250,247,242,.35); margin-top:10px; position:relative; z-index:1; }
   .btn-retry { width:100%; padding:14px; background:transparent; border:1px solid var(--blush); border-radius:12px; font-family:'DM Sans',sans-serif; font-size:13px; color:var(--muted); cursor:pointer; margin-top:12px; }
   .btn-retry:hover { border-color:var(--rose); color:var(--rose); }
+  .q-btn { flex:1; padding:8px 4px; border:1px solid var(--blush); border-radius:10px; font-size:12px; color:var(--muted); background:none; cursor:pointer; transition:all .2s; font-family:'DM Sans',sans-serif; white-space:nowrap; }
+  .q-btn.active { background:var(--deep); color:var(--cream); border-color:var(--deep); }
   .notice { text-align:center; font-size:11px; color:var(--muted); margin-top:24px; line-height:1.7; opacity:.7; }
 
   /* モーダル共通 */
@@ -281,6 +283,36 @@
       <div class="preview-overlay"></div>
       <button class="preview-change" id="changeBtn">変更</button>
     </div>
+    <!-- 3問アンケート -->
+    <div id="questionnaireCard" style="display:none;background:white;border:1px solid var(--blush);border-radius:20px;padding:24px;margin-top:16px;">
+      <div style="font-size:11px;letter-spacing:.25em;text-transform:uppercase;color:var(--rose);margin-bottom:16px;">✦ 今日の体調チェック</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:18px;line-height:1.6;">3つの質問に答えると、今日の肌状態をより正確に診断できます。</p>
+
+      <div style="margin-bottom:16px;">
+        <div style="font-size:13px;font-weight:500;margin-bottom:8px;">😴 昨夜の睡眠は？</div>
+        <div style="display:flex;gap:8px;" id="q1">
+          <button class="q-btn active" data-val="2" onclick="selectQ('q1',this)">7時間以上</button>
+          <button class="q-btn" data-val="0" onclick="selectQ('q1',this)">5〜6時間</button>
+          <button class="q-btn" data-val="-3" onclick="selectQ('q1',this)">4時間以下</button>
+        </div>
+      </div>
+      <div style="margin-bottom:16px;">
+        <div style="font-size:13px;font-weight:500;margin-bottom:8px;">💧 今日の水分補給は？</div>
+        <div style="display:flex;gap:8px;" id="q2">
+          <button class="q-btn active" data-val="2" onclick="selectQ('q2',this)">しっかり飲んだ</button>
+          <button class="q-btn" data-val="0" onclick="selectQ('q2',this)">普通</button>
+          <button class="q-btn" data-val="-2" onclick="selectQ('q2',this)">あまり飲んでない</button>
+        </div>
+      </div>
+      <div style="margin-bottom:4px;">
+        <div style="font-size:13px;font-weight:500;margin-bottom:8px;">😤 最近のストレスは？</div>
+        <div style="display:flex;gap:8px;" id="q3">
+          <button class="q-btn active" data-val="1" onclick="selectQ('q3',this)">少ない</button>
+          <button class="q-btn" data-val="0" onclick="selectQ('q3',this)">普通</button>
+          <button class="q-btn" data-val="-2" onclick="selectQ('q3',this)">多い</button>
+        </div>
+      </div>
+    </div>
     <button class="btn-primary" id="analyzeBtn" disabled onclick="analyze()">診断する</button>
   </div>
 
@@ -311,10 +343,9 @@
       <p id="commentText"></p>
     </div>
 
-    <!-- ====== 8つの新機能タブ ====== -->
+    <!-- ====== 7つの機能タブ（比較タブ削除）====== -->
     <div class="nav-tabs" id="featureTabs">
-      <button class="nav-tab active" onclick="switchTab('beforeafter')">🔄 比較</button>
-      <button class="nav-tab" onclick="switchTab('graph')">📈 グラフ</button>
+      <button class="nav-tab active" onclick="switchTab('graph')">📈 グラフ</button>
       <button class="nav-tab" onclick="switchTab('routine')">🌿 ルーティン</button>
       <button class="nav-tab" onclick="switchTab('ingredient')">🧴 成分</button>
       <button class="nav-tab" onclick="switchTab('mote')">💕 モテ肌</button>
@@ -323,28 +354,8 @@
       <button class="nav-tab" onclick="switchTab('cycle')">🌙 周期ケア</button>
     </div>
 
-    <!-- 1. Before/After比較 -->
-    <div class="tab-content active" id="tab-beforeafter">
-      <div class="feature-section">
-        <div class="fs-label">🔄 <span>Before / After 比較</span></div>
-        <p style="font-size:13px;color:var(--muted);margin-bottom:10px;line-height:1.6;">スライダーを左右に動かして、ケア前後の肌の変化を確認できます。</p>
-        <div class="ba-wrap" id="baWrap">
-          <canvas id="baCanvasBefore" class="ba-canvas-before"></canvas>
-          <canvas id="baCanvasAfter" class="ba-canvas-after"></canvas>
-          <div class="ba-divider-line" id="baDivLine"></div>
-          <div class="ba-handle-btn" id="baHandleBtn">⇔</div>
-          <div class="ba-tag ba-tag-before">BEFORE 現在</div>
-          <div class="ba-tag ba-tag-after">AFTER ケア後</div>
-        </div>
-        <div class="ba-bars" id="baBars"></div>
-        <div id="baEffectDesc" style="margin-top:12px;background:var(--light);border-radius:12px;padding:14px;font-size:12px;color:var(--muted);line-height:1.7;display:none;">
-          ✨ Afterは<strong style="color:var(--rose);">3ヶ月間の専用ケアで期待できる改善</strong>のシミュレーションです。明るさUP・シミ除去・毛穴縮小・ハリ改善を写真で表現しています。
-        </div>
-      </div>
-    </div>
-
-    <!-- 2. 月別変化グラフ -->
-    <div class="tab-content" id="tab-graph">
+    <!-- 1. 月別変化グラフ（先頭タブ）-->
+    <div class="tab-content active" id="tab-graph">
       <div class="feature-section">
         <div class="fs-label">📈 <span>月別肌年齢トレンド</span></div>
         <div class="chart-wrap">
@@ -566,11 +577,26 @@ fileInput.addEventListener('change',(e)=>{
   const file=e.target.files[0];if(!file)return;
   selectedFile=file;previewImg.src=URL.createObjectURL(file);
   uploadArea.style.display='none';previewWrap.style.display='block';
-  analyzeBtn.disabled=false;document.getElementById('resultWrap').style.display='none';
+  analyzeBtn.disabled=false;
+  document.getElementById('questionnaireCard').style.display='block';
+  document.getElementById('resultWrap').style.display='none';
 });
 document.getElementById('changeBtn').addEventListener('click',()=>{fileInput.value='';fileInput.click();});
 
 function clamp(v,mn,mx){return Math.min(mx,Math.max(mn,v));}
+
+// ===== アンケート操作 =====
+function selectQ(groupId, btn) {
+  document.querySelectorAll('#'+groupId+' .q-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+function getQuestionBonus() {
+  const get = id => {
+    const a = document.querySelector('#'+id+' .q-btn.active');
+    return a ? parseInt(a.dataset.val) : 0;
+  };
+  return get('q1') + get('q2') + get('q3');
+}
 
 // ===== 画像解析 =====
 function analyzeImage(img,realAge){
@@ -602,18 +628,39 @@ function analyzeImage(img,realAge){
   let rbVarSum=0;const avgRB=avgR-avgB;
   for(let i=0,p=0;i<data.length;i+=4,p++)rbVarSum+=(data[i]-data[i+2]-avgRB)**2;
   const rbStd=Math.sqrt(rbVarSum/total),darkPenalty=Math.max(0,(160-avgBright)/160);
-  const moisture=Math.round(clamp(80-(stdDev/55)*60-darkPenalty*22+(Math.random()-0.5)*4,8,82));
-  const pores=Math.round(clamp(82-(localContrast/40)*70-(stdDev/65)*15+(Math.random()-0.5)*4,8,80));
-  const spotsScore=Math.round(clamp(78-(spotRatio*500)-(rbStd/30)*45-darkPenalty*25+(Math.random()-0.5)*4,5,78));
-  const firmness=Math.round(clamp(82-(localContrast/40)*55-(stdDev/60)*30-darkPenalty*12+(Math.random()-0.5)*4,8,80));
-  const bias=5+Math.round(Math.random()*3);
-  const skinAge=clamp(realAge+bias,realAge+5,realAge+8);
+
+  // ── 日付シード（同じ日は同じブレ、毎日自然に変化）──
+  const today=new Date();
+  const dateSeed=today.getFullYear()*10000+(today.getMonth()+1)*100+today.getDate();
+  const seededRand=(offset)=>(((dateSeed*1000003+offset*998244353)%10007)/10007-0.5)*2; // -1〜+1
+
+  // ── 時間帯補正（朝は肌回復気味、夜は疲れ気味）──
+  const hour=today.getHours();
+  const timeBonus = hour>=6&&hour<=10 ? 2 : hour>=23||hour<=4 ? -2 : 0;
+
+  // ── アンケート補正 ──
+  const qBonus=getQuestionBonus();
+
+  // ── 各スコア計算（画像解析ベース＋日付シードノイズ）──
+  const moisture=Math.round(clamp(80-(stdDev/55)*60-darkPenalty*22+seededRand(1)*3+timeBonus+qBonus*0.4,8,88));
+  const pores=Math.round(clamp(82-(localContrast/40)*70-(stdDev/65)*15+seededRand(2)*3+timeBonus*0.5,8,85));
+  const spotsScore=Math.round(clamp(78-(spotRatio*500)-(rbStd/30)*45-darkPenalty*25+seededRand(3)*3+qBonus*0.3,5,82));
+  const firmness=Math.round(clamp(82-(localContrast/40)*55-(stdDev/60)*30-darkPenalty*12+seededRand(4)*3+qBonus*0.3,8,85));
+
+  // ── 肌年齢（アンケート補正で改善を実感できる）──
+  const baseAgeBias=5+Math.round(((dateSeed%7)/7)*3); // 日付で5〜7の範囲
+  const ageBias=Math.max(1, baseAgeBias - Math.round(qBonus*0.4) - (timeBonus>0?1:0));
+  const skinAge=clamp(realAge+ageBias,realAge+1,realAge+8);
   const diff=skinAge-realAge;
+
+  // ── コンテキスト表示（アンケート結果を反映）──
+  const qLabel = qBonus>=4 ? '体調も良好で肌に有利な状態です。' : qBonus<=-3 ? '睡眠・水分不足が肌に影響しています。' : '';
   let tagline,comment;
-  if(diff<=5){tagline='やや老化サインが見られます';comment=`実年齢より${diff}歳上の肌年齢です。シミ・くすみや毛穴の開きが気になる状態です。美白ケアと保湿を強化することで改善が期待できます。`;}
-  else if(diff<=7){tagline='エイジングサインが目立ちます';comment=`実年齢より${diff}歳上の肌年齢です。シミ・くすみ・乾燥・ハリの低下が複合的に見られます。パーソナルケアプランで着実な改善を目指しましょう。`;}
-  else{tagline='集中的なケアが必要な状態です';comment=`実年齢より${diff}歳上の肌年齢です。シミ・くすみが広範囲に見られ、弾力・水分量ともに低下が進んでいます。専用の集中ケアで今すぐ若返りを始めましょう。`;}
-  return{skinAge,realAge,diff,moisture,pores,spotsScore,firmness,tagline,comment};
+  if(diff<=3){tagline='良好な肌状態です';comment=`実年齢より${diff}歳上の肌年齢です。${qLabel}このケアを続けることで更なる改善が期待できます。`;}
+  else if(diff<=5){tagline='やや老化サインが見られます';comment=`実年齢より${diff}歳上の肌年齢です。${qLabel}美白ケアと保湿を強化することで改善が期待できます。`;}
+  else if(diff<=7){tagline='エイジングサインが目立ちます';comment=`実年齢より${diff}歳上の肌年齢です。${qLabel}パーソナルケアプランで着実な改善を目指しましょう。`;}
+  else{tagline='集中的なケアが必要な状態です';comment=`実年齢より${diff}歳上の肌年齢です。${qLabel}専用の集中ケアで今すぐ若返りを始めましょう。`;}
+  return{skinAge,realAge,diff,moisture,pores,spotsScore,firmness,tagline,comment,qBonus,timeBonus};
 }
 
 function analyze(){
@@ -647,7 +694,6 @@ function showResult(r){
   saveBtn.style.display='block';saveBtn.textContent='📋 美容カルテに保存する';saveBtn.disabled=false;
   document.getElementById('resultWrap').style.display='block';
   // 各機能を初期化
-  initBeforeAfter(r);
   initGraph();
   initRoutine(r);
   initIngredients(r);
@@ -655,13 +701,14 @@ function showResult(r){
   initAdvice(r);
   initChat(r);
   initCycle();
-  switchTab('beforeafter');
+  switchTab('graph');
 }
 
 function reset(){
   selectedFile=null;previewImg.src='';
   uploadArea.style.display='flex';previewWrap.style.display='none';
   analyzeBtn.disabled=true;
+  document.getElementById('questionnaireCard').style.display='none';
   document.getElementById('uploadSection').style.display='block';
   document.getElementById('loadingWrap').style.display='none';
   document.getElementById('resultWrap').style.display='none';
@@ -674,7 +721,7 @@ function switchTab(id){
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
   document.getElementById('tab-'+id).classList.add('active');
   const tabs=document.querySelectorAll('.nav-tab');
-  const map={beforeafter:0,graph:1,routine:2,ingredient:3,mote:4,advice:5,chat:6,cycle:7};
+  const map={graph:0,routine:1,ingredient:2,mote:3,advice:4,chat:5,cycle:6};
   if(map[id]!==undefined)tabs[map[id]].classList.add('active');
   if(id==='graph')renderGraph();
 }
