@@ -134,21 +134,21 @@
   .feature-section h3 { font-family:'Cormorant Garamond',serif; font-size:20px; font-weight:300; margin-bottom:12px; }
 
   /* Before/After */
-  .ba-container { position:relative; border-radius:14px; overflow:hidden; background:var(--light); height:220px; user-select:none; }
-  .ba-after, .ba-before { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; }
-  .ba-before { background:linear-gradient(135deg,#e8d5c8 0%,#d4b5a0 100%); }
-  .ba-after { background:linear-gradient(135deg,#f5e8de 0%,#ead0be 100%); clip-path:inset(0 50% 0 0); transition:clip-path 0s; }
-  .ba-label { position:absolute; bottom:12px; font-size:11px; letter-spacing:.2em; color:var(--deep); background:rgba(255,255,255,.8); padding:4px 10px; border-radius:99px; }
-  .ba-before .ba-label { left:12px; }
-  .ba-after .ba-label { right:12px; }
-  .ba-divider { position:absolute; top:0; bottom:0; width:2px; background:white; cursor:ew-resize; z-index:10; left:50%; transform:translateX(-50%); }
-  .ba-handle { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:36px; height:36px; background:white; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 8px rgba(0,0,0,.2); font-size:14px; }
-  .ba-face-before, .ba-face-after { font-size:64px; line-height:1; }
-  .ba-score-row { display:flex; justify-content:space-between; margin-top:14px; gap:8px; }
-  .ba-score-item { flex:1; text-align:center; background:var(--light); border-radius:10px; padding:10px 6px; }
-  .ba-score-item .bsv { font-family:'Cormorant Garamond',serif; font-size:22px; color:var(--deep); }
-  .ba-score-item .bsl { font-size:10px; color:var(--muted); letter-spacing:.1em; }
-  .ba-score-item .bsd { font-size:11px; color:var(--rose); font-weight:500; }
+  .ba-wrap { position:relative; border-radius:16px; overflow:hidden; background:#f0e6de; height:260px; user-select:none; cursor:ew-resize; }
+  .ba-canvas-before, .ba-canvas-after { position:absolute; inset:0; width:100%; height:100%; }
+  .ba-canvas-after { clip-path:inset(0 50% 0 0); }
+  .ba-divider-line { position:absolute; top:0; bottom:0; left:50%; width:3px; background:white; transform:translateX(-50%); z-index:10; pointer-events:none; box-shadow:0 0 8px rgba(0,0,0,.25); }
+  .ba-handle-btn { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:40px; height:40px; background:white; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 3px 12px rgba(0,0,0,.25); z-index:11; pointer-events:none; font-size:16px; }
+  .ba-tag { position:absolute; top:12px; font-size:10px; letter-spacing:.2em; font-weight:500; color:white; padding:4px 12px; border-radius:99px; z-index:12; pointer-events:none; }
+  .ba-tag-before { left:12px; background:rgba(58,42,36,.55); }
+  .ba-tag-after { right:12px; background:rgba(201,133,106,.8); }
+  .ba-bars { margin-top:14px; display:flex; flex-direction:column; gap:8px; }
+  .ba-bar-row { display:grid; grid-template-columns:72px 1fr 44px; align-items:center; gap:8px; }
+  .ba-bar-label { font-size:11px; color:var(--muted); letter-spacing:.05em; }
+  .ba-bar-track { height:8px; background:var(--light); border-radius:99px; position:relative; overflow:visible; }
+  .ba-bar-before { height:8px; border-radius:99px; background:#d4b5a0; position:absolute; top:0; left:0; transition:width 1s cubic-bezier(.4,0,.2,1); }
+  .ba-bar-after { height:8px; border-radius:99px; background:linear-gradient(to right,#E8C5B0,#C9856A); position:absolute; top:0; left:0; transition:width 1.2s cubic-bezier(.4,0,.2,1) .1s; opacity:.85; }
+  .ba-bar-nums { font-size:11px; color:var(--rose); font-weight:500; text-align:right; white-space:nowrap; }
 
   /* 月別変化グラフ */
   .chart-wrap { position:relative; height:200px; margin-top:8px; }
@@ -327,25 +327,18 @@
     <div class="tab-content active" id="tab-beforeafter">
       <div class="feature-section">
         <div class="fs-label">🔄 <span>Before / After 比較</span></div>
-        <p style="font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.6;">スライダーを動かして、ケア前後のお肌の変化を確認できます。</p>
-        <div class="ba-container" id="baContainer">
-          <div class="ba-before">
-            <div class="ba-face-before">😔</div>
-            <div class="ba-label">Before</div>
-          </div>
-          <div class="ba-after" id="baAfter">
-            <div class="ba-face-after">✨</div>
-            <div class="ba-label">After</div>
-          </div>
-          <div class="ba-divider" id="baDivider">
-            <div class="ba-handle">⇔</div>
-          </div>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:10px;line-height:1.6;">スライダーを左右に動かして、ケア前後の肌の変化を確認できます。</p>
+        <div class="ba-wrap" id="baWrap">
+          <canvas id="baCanvasBefore" class="ba-canvas-before"></canvas>
+          <canvas id="baCanvasAfter" class="ba-canvas-after"></canvas>
+          <div class="ba-divider-line" id="baDivLine"></div>
+          <div class="ba-handle-btn" id="baHandleBtn">⇔</div>
+          <div class="ba-tag ba-tag-before">BEFORE 現在</div>
+          <div class="ba-tag ba-tag-after">AFTER ケア後</div>
         </div>
-        <div class="ba-score-row" id="baScoreRow">
-          <div class="ba-score-item"><div class="bsv" id="ba-m">--</div><div class="bsl">水分量</div><div class="bsd" id="ba-md">改善目標</div></div>
-          <div class="ba-score-item"><div class="bsv" id="ba-p">--</div><div class="bsl">毛穴ケア</div><div class="bsd" id="ba-pd">改善目標</div></div>
-          <div class="ba-score-item"><div class="bsv" id="ba-s">--</div><div class="bsl">シミ・くすみ</div><div class="bsd" id="ba-sd">改善目標</div></div>
-          <div class="ba-score-item"><div class="bsv" id="ba-f">--</div><div class="bsl">ハリ・弾力</div><div class="bsd" id="ba-fd">改善目標</div></div>
+        <div class="ba-bars" id="baBars"></div>
+        <div id="baEffectDesc" style="margin-top:12px;background:var(--light);border-radius:12px;padding:14px;font-size:12px;color:var(--muted);line-height:1.7;display:none;">
+          ✨ Afterは<strong style="color:var(--rose);">3ヶ月間の専用ケアで期待できる改善</strong>のシミュレーションです。明るさUP・シミ除去・毛穴縮小・ハリ改善を写真で表現しています。
         </div>
       </div>
     </div>
@@ -686,36 +679,395 @@ function switchTab(id){
   if(id==='graph')renderGraph();
 }
 
-// ===== 1. Before/After =====
-function initBeforeAfter(r){
-  document.getElementById('ba-m').textContent=r.moisture;
-  document.getElementById('ba-p').textContent=r.pores;
-  document.getElementById('ba-s').textContent=r.spotsScore;
-  document.getElementById('ba-f').textContent=r.firmness;
-  const target=v=>Math.min(100,Math.round(v*1.25+5));
-  document.getElementById('ba-md').textContent='目標: '+target(r.moisture)+'点';
-  document.getElementById('ba-pd').textContent='目標: '+target(r.pores)+'点';
-  document.getElementById('ba-sd').textContent='目標: '+target(r.spotsScore)+'点';
-  document.getElementById('ba-fd').textContent='目標: '+target(r.firmness)+'点';
+// ===== 1. Before/After（実際の写真ベース）=====
+// 写真をCanvasに描画し、ピクセル操作でAfterの肌改善を表現する
+function drawPhotoToCanvas(canvas, img, scores, isAfter) {
+  const W = canvas.width, H = canvas.height;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, W, H);
+
+  // 写真をcanvasサイズにfit（center crop）
+  const imgRatio = img.naturalWidth / img.naturalHeight;
+  const canRatio = W / H;
+  let sx, sy, sw, sh;
+  if (imgRatio > canRatio) {
+    sh = img.naturalHeight; sw = sh * canRatio;
+    sy = 0; sx = (img.naturalWidth - sw) / 2;
+  } else {
+    sw = img.naturalWidth; sh = sw / canRatio;
+    sx = 0; sy = (img.naturalHeight - sh) / 2;
+  }
+  ctx.drawImage(img, sx, sy, sw, sh, 0, 0, W, H);
+
+  if (isAfter) {
+    // ピクセル単位で肌改善エフェクトを適用
+    const imageData = ctx.getImageData(0, 0, W, H);
+    const d = imageData.data;
+
+    const avg = (scores.moisture + scores.pores + scores.spots + scores.firmness) / 4;
+    // 改善強度（スコアが低いほど変化を大きく）
+    const improveStrength = Math.max(0.15, (80 - avg) / 100);
+
+    // 明るさ増加量（水分・シミスコアが低いほど大きく）
+    const brightnessBoost = Math.round(improveStrength * 28);
+    // 彩度向上（ツヤ感）
+    const satBoost = 1 + improveStrength * 0.22;
+    // 肌色レンジ判定（肌色ピクセルを選択的に補正）
+    const isSkinPixel = (r, g, b) => {
+      const mx = Math.max(r, g, b), mn = Math.min(r, g, b);
+      const sat = mx === 0 ? 0 : (mx - mn) / mx;
+      return r > 100 && r > b && r > g * 0.85 && sat < 0.55 && (r + g + b) / 3 > 80;
+    };
+
+    for (let i = 0; i < d.length; i += 4) {
+      const r = d[i], g = d[i+1], b = d[i+2];
+      if (!isSkinPixel(r, g, b)) continue;
+
+      // 1) 明るさUP（輝度を上げる）
+      let nr = Math.min(255, r + brightnessBoost);
+      let ng = Math.min(255, g + brightnessBoost * 0.85);
+      let nb = Math.min(255, b + brightnessBoost * 0.7);
+
+      // 2) 彩度向上（くすみ除去 → 肌がクリアに）
+      const avg3 = (nr + ng + nb) / 3;
+      nr = Math.min(255, Math.max(0, avg3 + (nr - avg3) * satBoost));
+      ng = Math.min(255, Math.max(0, avg3 + (ng - avg3) * satBoost));
+      nb = Math.min(255, Math.max(0, avg3 + (nb - avg3) * satBoost));
+
+      // 3) 赤みムラ軽減（シミ・くすみ → 均一な肌色へ）
+      if (scores.spots < 60) {
+        const spotFix = (60 - scores.spots) / 300;
+        const skin = (nr * 0.5 + ng * 0.3 + nb * 0.2);
+        nr = Math.min(255, nr * (1 - spotFix) + skin * spotFix * 1.1);
+        ng = Math.min(255, ng * (1 - spotFix * 0.7) + skin * spotFix * 0.85);
+        nb = Math.min(255, nb * (1 - spotFix * 0.5) + skin * spotFix * 0.7);
+      }
+
+      // 4) 毛穴・テクスチャー平滑化（コントラスト低減）
+      if (scores.pores < 60) {
+        const smoothFactor = (60 - scores.pores) / 400;
+        // 周囲との差を縮める
+        nr = nr * (1 - smoothFactor) + avg3 * smoothFactor;
+        ng = ng * (1 - smoothFactor) + avg3 * smoothFactor;
+        nb = nb * (1 - smoothFactor) + avg3 * smoothFactor;
+      }
+
+      d[i]   = Math.round(nr);
+      d[i+1] = Math.round(ng);
+      d[i+2] = Math.round(nb);
+    }
+    ctx.putImageData(imageData, 0, 0);
+
+    // ツヤ感のオーバーレイ（水分量に応じたハイライト）
+    if (scores.moisture < 70) {
+      const glowStrength = improveStrength * 0.18;
+      const glow = ctx.createRadialGradient(W * 0.38, H * 0.32, 0, W * 0.38, H * 0.32, W * 0.38);
+      glow.addColorStop(0, `rgba(255,240,225,${glowStrength})`);
+      glow.addColorStop(0.5, `rgba(255,220,195,${glowStrength * 0.4})`);
+      glow.addColorStop(1, 'rgba(255,220,195,0)');
+      ctx.fillStyle = glow;
+      ctx.fillRect(0, 0, W, H);
+    }
+  }
+
+  // ラベルオーバーレイ
+  const labelText = isAfter ? 'AFTER  ケア後イメージ' : 'BEFORE  現在の状態';
+  const labelBg = isAfter ? 'rgba(201,133,106,0.82)' : 'rgba(30,18,14,0.58)';
+  ctx.save();
+  ctx.fillStyle = labelBg;
+  ctx.beginPath(); ctx.roundRect(10, H - 34, isAfter ? 148 : 132, 24, 6); ctx.fill();
+  ctx.fillStyle = 'white';
+  ctx.font = 'bold 10px "DM Sans", sans-serif';
+  ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+  ctx.fillText(labelText, 18, H - 22);
+  ctx.restore();
+
+  // スコア表示バッジ
+  const avg2 = (scores.moisture + scores.pores + scores.spots + scores.firmness) / 4;
+  const targetScore = v => Math.min(95, Math.round(v * 1.3 + 8));
+  const targetAvg = (targetScore(scores.moisture) + targetScore(scores.pores) + targetScore(scores.spots) + targetScore(scores.firmness)) / 4;
+  const scoreText = isAfter ? `スコア ${Math.round(targetAvg)}点` : `スコア ${Math.round(avg2)}点`;
+  ctx.save();
+  ctx.fillStyle = isAfter ? 'rgba(201,133,106,0.82)' : 'rgba(30,18,14,0.48)';
+  ctx.beginPath(); ctx.roundRect(W - 88, H - 34, 78, 24, 6); ctx.fill();
+  ctx.fillStyle = 'white';
+  ctx.font = 'bold 10px "DM Sans", sans-serif';
+  ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+  ctx.fillText(scoreText, W - 14, H - 22);
+  ctx.restore();
+}
+
+// ダミーの旧drawFace（後方互換のため残す）
+function drawFace(canvas, scores, isAfter) {
+  const W = canvas.width, H = canvas.height;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, W, H);
+
+  // 背景グラデーション
+  const bg = ctx.createLinearGradient(0, 0, W, H);
+  if (isAfter) {
+    bg.addColorStop(0, '#fdf4ef');
+    bg.addColorStop(1, '#f5e0d3');
+  } else {
+    bg.addColorStop(0, '#e8d8ce');
+    bg.addColorStop(1, '#d8c2b5');
+  }
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, W, H);
+
+  const cx = W / 2, cy = H * 0.46;
+  const avg = (scores.moisture + scores.pores + scores.spots + scores.firmness) / 4;
+  const target = v => Math.min(95, Math.round(v * 1.3 + 8));
+  const effectiveScore = isAfter ? target(avg) : avg;
+
+  // ── 肌色（スコアで明るさ変化）──
+  const skinLight = isAfter ? 88 : Math.max(62, 88 - (100 - effectiveScore) * 0.35);
+  const skinColor = `hsl(20, ${isAfter ? 38 : 28}%, ${skinLight}%)`;
+  const shadowColor = isAfter ? 'hsl(20,30%,76%)' : 'hsl(20,22%,65%)';
+
+  // 首
+  const neckGrad = ctx.createLinearGradient(cx - 18, cy + 95, cx + 18, cy + 95);
+  neckGrad.addColorStop(0, shadowColor);
+  neckGrad.addColorStop(0.5, skinColor);
+  neckGrad.addColorStop(1, shadowColor);
+  ctx.fillStyle = neckGrad;
+  ctx.beginPath();
+  ctx.roundRect(cx - 18, cy + 88, 36, 50, 8);
+  ctx.fill();
+
+  // 顔の輪郭（ハリスコアで形が変わる）
+  const faceGrad = ctx.createRadialGradient(cx - 12, cy - 30, 10, cx, cy, 95);
+  faceGrad.addColorStop(0, isAfter ? 'hsl(20,42%,93%)' : 'hsl(20,28%,80%)');
+  faceGrad.addColorStop(1, skinColor);
+  ctx.fillStyle = faceGrad;
+
+  // firmnessで顎のたるみを表現
+  const sag = isAfter ? 0 : Math.max(0, (60 - scores.firmness) * 0.18);
+  ctx.beginPath();
+  ctx.ellipse(cx, cy, 72, 88 + sag, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // 輪郭の影
+  ctx.strokeStyle = shadowColor;
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+
+  // ── シミ・くすみ（spotsスコアで点の数・濃さ変化）──
+  if (!isAfter && scores.spots < 65) {
+    const spotCount = Math.floor((65 - scores.spots) / 8) + 2;
+    ctx.save();
+    for (let i = 0; i < spotCount; i++) {
+      const seed = i * 137.5;
+      const sx = cx + (Math.cos(seed) * 38) + (i % 2 === 0 ? 12 : -12);
+      const sy = cy - 20 + Math.sin(seed * 0.7) * 28;
+      const r = 3 + (i % 3);
+      const opacity = 0.12 + (65 - scores.spots) / 400;
+      ctx.fillStyle = `rgba(120,70,40,${opacity})`;
+      ctx.beginPath();
+      ctx.ellipse(sx, sy, r, r * 0.7, seed * 0.3, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  // ── 毛穴（poresスコアで表現）──
+  if (!isAfter && scores.pores < 60) {
+    ctx.save();
+    const poreCount = Math.floor((60 - scores.pores) / 6) + 4;
+    for (let i = 0; i < poreCount; i++) {
+      const px = cx - 30 + (i % 6) * 12;
+      const py = cy - 5 + Math.floor(i / 6) * 14;
+      ctx.fillStyle = 'rgba(100,60,40,0.07)';
+      ctx.beginPath();
+      ctx.arc(px, py, 2.2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  // ── ほうれい線（firmnessスコアで濃さ変化）──
+  if (!isAfter && scores.firmness < 60) {
+    const lOpacity = (60 - scores.firmness) / 280;
+    ctx.strokeStyle = `rgba(160,100,70,${lOpacity})`;
+    ctx.lineWidth = 1.5;
+    ctx.lineCap = 'round';
+    // 左
+    ctx.beginPath(); ctx.moveTo(cx - 22, cy + 20); ctx.quadraticCurveTo(cx - 30, cy + 42, cx - 18, cy + 58); ctx.stroke();
+    // 右
+    ctx.beginPath(); ctx.moveTo(cx + 22, cy + 20); ctx.quadraticCurveTo(cx + 30, cy + 42, cx + 18, cy + 58); ctx.stroke();
+  }
+
+  // ── ツヤ・ハイライト（Afterは明るく）──
+  if (isAfter || scores.moisture > 50) {
+    const glowAlpha = isAfter ? 0.55 : scores.moisture / 280;
+    const glow = ctx.createRadialGradient(cx - 18, cy - 38, 2, cx - 18, cy - 30, 30);
+    glow.addColorStop(0, `rgba(255,240,230,${glowAlpha})`);
+    glow.addColorStop(1, 'rgba(255,240,230,0)');
+    ctx.fillStyle = glow;
+    ctx.beginPath(); ctx.ellipse(cx - 18, cy - 30, 30, 22, -0.3, 0, Math.PI * 2); ctx.fill();
+  }
+
+  // ── 眉毛 ──
+  ctx.strokeStyle = isAfter ? '#8B6558' : '#7a5c52';
+  ctx.lineWidth = 2.5; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(cx - 28, cy - 44); ctx.quadraticCurveTo(cx - 20, cy - 50, cx - 10, cy - 46); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx + 28, cy - 44); ctx.quadraticCurveTo(cx + 20, cy - 50, cx + 10, cy - 46); ctx.stroke();
+
+  // ── 目 ──
+  const eyeY = cy - 30;
+  [[cx - 20, 1], [cx + 20, -1]].forEach(([ex, flip]) => {
+    // 白目
+    ctx.fillStyle = 'white';
+    ctx.beginPath(); ctx.ellipse(ex, eyeY, 14, 9, 0, 0, Math.PI * 2); ctx.fill();
+    // 瞳
+    const irisG = ctx.createRadialGradient(ex - 2, eyeY - 2, 1, ex, eyeY, 7);
+    irisG.addColorStop(0, '#6b4c3e'); irisG.addColorStop(1, '#3a2a1e');
+    ctx.fillStyle = irisG;
+    ctx.beginPath(); ctx.arc(ex, eyeY, 6.5, 0, Math.PI * 2); ctx.fill();
+    // ハイライト
+    ctx.fillStyle = 'rgba(255,255,255,0.85)';
+    ctx.beginPath(); ctx.arc(ex - 2, eyeY - 2, 2, 0, Math.PI * 2); ctx.fill();
+    // まつ毛
+    ctx.strokeStyle = '#3a2520'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.ellipse(ex, eyeY, 14, 9, 0, Math.PI, Math.PI * 2); ctx.stroke();
+  });
+
+  // ── 鼻 ──
+  ctx.strokeStyle = shadowColor; ctx.lineWidth = 1.2;
+  ctx.beginPath(); ctx.moveTo(cx, cy - 18); ctx.quadraticCurveTo(cx + 4, cy + 10, cx - 6, cy + 18); ctx.stroke();
+  ctx.beginPath(); ctx.arc(cx + 6, cy + 16, 6, 0.2, Math.PI - 0.2); ctx.stroke();
+
+  // ── 口 ──
+  const lipColor = isAfter ? '#c87060' : '#b8786a';
+  ctx.fillStyle = lipColor;
+  ctx.beginPath(); ctx.ellipse(cx, cy + 38, 18, 7, 0, 0, Math.PI); ctx.fill();
+  ctx.fillStyle = isAfter ? '#e09080' : '#cc887a';
+  ctx.beginPath(); ctx.ellipse(cx, cy + 33, 14, 5, 0, 0, Math.PI); ctx.fill();
+  // 口角の微笑み
+  const smileAmount = isAfter ? 3 : 0;
+  ctx.strokeStyle = lipColor; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(cx - 18, cy + 38); ctx.quadraticCurveTo(cx - 22, cy + 40 - smileAmount, cx - 20, cy + 38 - smileAmount); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx + 18, cy + 38); ctx.quadraticCurveTo(cx + 22, cy + 40 - smileAmount, cx + 20, cy + 38 - smileAmount); ctx.stroke();
+
+  // ── 耳 ──
+  [cx - 72, cx + 72].forEach((ex, i) => {
+    ctx.fillStyle = skinColor;
+    ctx.beginPath(); ctx.ellipse(ex, cy, 10, 18, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = shadowColor; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.ellipse(ex + (i === 0 ? 3 : -3), cy, 5, 11, 0, 0, Math.PI * 2); ctx.stroke();
+  });
+
+  // ── Afterのキラキラ効果 ──
+  if (isAfter) {
+    ctx.save();
+    [[cx + 52, cy - 60], [cx - 55, cy - 50], [cx + 45, cy + 20]].forEach(([sx, sy]) => {
+      ctx.strokeStyle = 'rgba(201,133,106,0.7)'; ctx.lineWidth = 1.5;
+      [-1, 1].forEach(d => {
+        ctx.beginPath(); ctx.moveTo(sx - 7 * d, sy); ctx.lineTo(sx + 7 * d, sy); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(sx, sy - 7 * d); ctx.lineTo(sx, sy + 7 * d); ctx.stroke();
+      });
+    });
+    ctx.restore();
+  }
+
+  // ── スコア表示 ──
+  const label = isAfter ? 'AFTER ケア後' : 'BEFORE 現在';
+  const labelBg = isAfter ? 'rgba(201,133,106,0.85)' : 'rgba(58,42,36,0.6)';
+  ctx.fillStyle = labelBg;
+  ctx.beginPath(); ctx.roundRect(12, H - 36, 90, 24, 8); ctx.fill();
+  ctx.fillStyle = 'white'; ctx.font = 'bold 10px DM Sans, sans-serif';
+  ctx.textAlign = 'left'; ctx.fillText(label, 20, H - 20);
+
+  // 肌年齢表示
+  const ageLabel = isAfter ? `目標 肌年齢 −${Math.ceil((100-effectiveScore)/12)}歳` : `現在スコア ${Math.round(avg)}点`;
+  ctx.fillStyle = isAfter ? 'rgba(201,133,106,0.9)' : 'rgba(58,42,36,0.55)';
+  ctx.beginPath(); ctx.roundRect(W - 110, H - 36, 100, 24, 8); ctx.fill();
+  ctx.fillStyle = 'white'; ctx.font = '10px DM Sans, sans-serif';
+  ctx.textAlign = 'right'; ctx.fillText(ageLabel, W - 16, H - 20);
+}
+
+function initBeforeAfter(r) {
+  const wrap = document.getElementById('baWrap');
+  const cb = document.getElementById('baCanvasBefore');
+  const ca = document.getElementById('baCanvasAfter');
+  const scores = { moisture: r.moisture, pores: r.pores, spots: r.spotsScore, firmness: r.firmness };
+  const targetScore = v => Math.min(95, Math.round(v * 1.3 + 8));
+
+  function renderWithPhoto(img) {
+    const W = wrap.offsetWidth || 390, H = 280;
+    [cb, ca].forEach(c => { c.width = W; c.height = H; });
+    drawPhotoToCanvas(cb, img, scores, false);
+    drawPhotoToCanvas(ca, img, scores, true);
+    document.getElementById('baEffectDesc').style.display = 'block';
+  }
+
+  // 診断に使った写真をURLから再取得
+  if (previewImg.src && previewImg.src !== window.location.href) {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => renderWithPhoto(img);
+    img.onerror = () => {
+      // 写真が使えない場合はフォールバック
+      const W = wrap.offsetWidth || 390, H = 280;
+      [cb, ca].forEach(c => { c.width = W; c.height = H; });
+      drawFace(cb, scores, false);
+      const afterScores = { moisture: targetScore(r.moisture), pores: targetScore(r.pores), spots: targetScore(r.spotsScore), firmness: targetScore(r.firmness) };
+      drawFace(ca, afterScores, true);
+    };
+    img.src = previewImg.src;
+  } else {
+    // フォールバック（写真なし）
+    const W = wrap.offsetWidth || 390, H = 280;
+    [cb, ca].forEach(c => { c.width = W; c.height = H; });
+    drawFace(cb, scores, false);
+    const afterScores = { moisture: targetScore(r.moisture), pores: targetScore(r.pores), spots: targetScore(r.spotsScore), firmness: targetScore(r.firmness) };
+    drawFace(ca, afterScores, true);
+  }
+
+  // スコア変化バー
+  const items = [
+    { label: '水分量',      before: r.moisture,    after: targetScore(r.moisture) },
+    { label: '毛穴ケア',    before: r.pores,        after: targetScore(r.pores) },
+    { label: 'シミ・くすみ', before: r.spotsScore,  after: targetScore(r.spotsScore) },
+    { label: 'ハリ・弾力',  before: r.firmness,     after: targetScore(r.firmness) }
+  ];
+  document.getElementById('baBars').innerHTML = items.map(it => `
+    <div class="ba-bar-row">
+      <div class="ba-bar-label">${it.label}</div>
+      <div class="ba-bar-track">
+        <div class="ba-bar-before" style="width:${it.before}%"></div>
+        <div class="ba-bar-after" style="width:0%" data-target="${it.after}"></div>
+      </div>
+      <div class="ba-bar-nums">${it.before} → <b>${it.after}</b></div>
+    </div>
+  `).join('');
+  setTimeout(() => {
+    document.querySelectorAll('.ba-bar-after').forEach(el => {
+      el.style.width = el.dataset.target + '%';
+    });
+  }, 400);
+
   setupBASlider();
 }
-function setupBASlider(){
-  const container=document.getElementById('baContainer');
-  const after=document.getElementById('baAfter');
-  const divider=document.getElementById('baDivider');
-  let dragging=false;
-  function setPos(x){
-    const rect=container.getBoundingClientRect();
-    const pct=Math.max(5,Math.min(95,(x-rect.left)/rect.width*100));
-    after.style.clipPath=`inset(0 ${100-pct}% 0 0)`;
-    divider.style.left=pct+'%';
+
+function setupBASlider() {
+  const wrap = document.getElementById('baWrap');
+  const after = document.getElementById('baCanvasAfter');
+  const divLine = document.getElementById('baDivLine');
+  const handle = document.getElementById('baHandleBtn');
+  let dragging = false;
+  function setPos(x) {
+    const rect = wrap.getBoundingClientRect();
+    const pct = Math.max(5, Math.min(95, (x - rect.left) / rect.width * 100));
+    after.style.clipPath = `inset(0 ${100 - pct}% 0 0)`;
+    divLine.style.left = handle.style.left = pct + '%';
   }
-  divider.addEventListener('mousedown',()=>dragging=true);
-  divider.addEventListener('touchstart',()=>dragging=true,{passive:true});
-  document.addEventListener('mouseup',()=>dragging=false);
-  document.addEventListener('touchend',()=>dragging=false);
-  document.addEventListener('mousemove',e=>{if(dragging)setPos(e.clientX);});
-  document.addEventListener('touchmove',e=>{if(dragging&&e.touches[0])setPos(e.touches[0].clientX);},{passive:true});
+  wrap.addEventListener('mousedown', e => { dragging = true; setPos(e.clientX); });
+  wrap.addEventListener('touchstart', e => { dragging = true; setPos(e.touches[0].clientX); }, { passive: true });
+  document.addEventListener('mouseup', () => dragging = false);
+  document.addEventListener('touchend', () => dragging = false);
+  document.addEventListener('mousemove', e => { if (dragging) setPos(e.clientX); });
+  document.addEventListener('touchmove', e => { if (dragging && e.touches[0]) setPos(e.touches[0].clientX); }, { passive: true });
 }
 
 // ===== 2. 月別グラフ =====
