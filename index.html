@@ -1474,9 +1474,24 @@ function saveToKarte(){
   btn.textContent='✅ カルテに保存しました！';btn.disabled=true;
 }
 function showKarte(show){
-  document.getElementById('container').style.display=show?'none':'block';
-  document.getElementById('karteWrap').style.display=show?'block':'none';
-  if(show)renderKarte();
+  // containerは常に表示。内部の各セクションを個別に切替
+  document.querySelector('.header').style.display = show ? 'none' : '';
+  if(!show){
+    // 戻るとき：結果があれば結果画面、なければトップ
+    if(lastResult){
+      document.getElementById('uploadSection').style.display = 'none';
+      document.getElementById('resultWrap').style.display = 'block';
+    } else {
+      document.getElementById('uploadSection').style.display = 'block';
+      document.getElementById('resultWrap').style.display = 'none';
+    }
+  } else {
+    document.getElementById('uploadSection').style.display = 'none';
+    document.getElementById('resultWrap').style.display = 'none';
+  }
+  document.getElementById('loadingWrap').style.display = 'none';
+  document.getElementById('karteWrap').style.display = show ? 'block' : 'none';
+  if(show) renderKarte();
 }
 function renderKarte(){
   const records=JSON.parse(localStorage.getItem('skinageKarte')||'[]');
