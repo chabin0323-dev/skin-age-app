@@ -480,11 +480,18 @@
     <div class="premium-cta" style="margin-top:16px;">
       <div class="prem-header">
         <span class="prem-badge">✦ Premium</span>
-        <span class="prem-trial">β版・先行登録受付中</span>
+        <span class="prem-trial">7日間 無料トライアル</span>
       </div>
       <h3>肌年齢を若返らせる<br>本格ケアを始めよう</h3>
-      <p class="prem-sub">現在β版を先行販売中。正式リリース後は全機能が順次開放されます。先行登録者は永久割引価格でご利用いただけます。</p>
-      <button class="btn-premium" onclick="openModal()">プランを見る・登録する →</button>
+      <p class="prem-sub">プレミアムプランでは全7機能がフル解放。AIアドバイス・成分レコメンド・生理周期ケアなど、あなただけのパーソナルスキンケアを毎日サポートします。</p>
+      <div class="prem-grid">
+        <div class="prem-item"><div class="prem-item-icon">📈</div><div class="prem-item-text">月別変化グラフで成長を実感</div></div>
+        <div class="prem-item"><div class="prem-item-icon">🧴</div><div class="prem-item-text">成分レコメンドで選ぶ迷いゼロ</div></div>
+        <div class="prem-item"><div class="prem-item-icon">💬</div><div class="prem-item-text">AI美容相談チャット24時間対応</div></div>
+        <div class="prem-item"><div class="prem-item-icon">🌙</div><div class="prem-item-text">生理周期連携で最適ケア提案</div></div>
+      </div>
+      <button class="btn-premium" onclick="openModal()">7日間無料で始める →</button>
+      <p class="prem-note">クレジットカード登録不要 · いつでも解約可能</p>
     </div>
 
     <button class="btn-save" id="saveBtn" onclick="saveToKarte()" style="display:none;">📋 美容カルテに保存する</button>
@@ -512,41 +519,68 @@
   <div class="modal">
     <button class="modal-close" onclick="closeModal()">✕</button>
     <h2>プランを選ぶ</h2>
-    <p class="modal-sub">7日間は完全無料。気に入らなければいつでもキャンセルできます。</p>
+    <p class="modal-sub">最初の7日間は完全無料。いつでも解約できます。</p>
+
     <div class="plan-card">
       <div class="plan-header"><span class="plan-name">ライトプラン</span></div>
       <div class="plan-price">¥480<span> / 月</span></div>
-      <div class="plan-desc">最初の7日間は無料。いつでも解約OK。</div>
+      <div class="plan-desc">毎日の肌変化を数字で追いたい方に</div>
       <ul class="plan-features">
-        <li>肌年齢診断（月5回まで）</li><li>月別変化グラフ</li><li>美容カルテ</li>
+        <li>肌年齢診断（月10回まで）</li>
+        <li>4項目スコア詳細表示</li>
+        <li>月別変化グラフ</li>
+        <li>美容カルテ（履歴無制限）</li>
+        <li>スキンケアルーティン提案</li>
       </ul>
       <div id="paypal-button-container-P-7A434972FV004594LNIJE5XA" style="margin-top:14px;"></div>
     </div>
+
     <div class="plan-card featured">
       <div class="plan-header"><span class="plan-name">プレミアムプラン</span><span class="plan-best">おすすめ</span></div>
       <div class="plan-price">¥980<span> / 月</span></div>
-      <div class="plan-desc">最初の7日間は無料。いつでも解約OK。</div>
+      <div class="plan-desc">本気で肌年齢を若返らせたい方に</div>
       <ul class="plan-features">
-        <li>肌年齢診断（無制限）</li><li>全8機能フル解放</li><li>AI美容相談チャット</li><li>生理周期連携ケア</li><li>成分レコメンド</li>
+        <li>肌年齢診断（無制限）</li>
+        <li>全7機能フル解放</li>
+        <li>AI美容相談チャット（24時間）</li>
+        <li>パーソナル成分レコメンド</li>
+        <li>生理周期連携スキンケア</li>
+        <li>モテ肌分析・AIアドバイス</li>
+        <li>優先メールサポート</li>
       </ul>
       <div id="paypal-button-container-P-97V00018FX1263937NIJFLMA" style="margin-top:14px;"></div>
     </div>
+
     <div class="plan-card">
-      <div class="plan-header"><span class="plan-name">プレミアム年払い</span><span class="plan-best" style="background:#C4A882;">お得</span></div>
+      <div class="plan-header"><span class="plan-name">プレミアム年払い</span><span class="plan-best" style="background:#C4A882;">2ヶ月お得</span></div>
       <div class="plan-price">¥7,800<span> / 年</span></div>
-      <div class="plan-desc">月650円相当。2ヶ月分お得！最初の7日間は無料。</div>
+      <div class="plan-desc">月あたり650円。プレミアムの全機能＋年間レポート付き</div>
       <ul class="plan-features">
-        <li>プレミアムプランの全機能</li><li>年間まとめ美容レポート</li><li>優先サポート</li>
+        <li>プレミアムの全機能</li>
+        <li>年間まとめ美容レポート</li>
+        <li>新機能を最優先で提供</li>
+        <li>優先サポート（最短24時間以内）</li>
       </ul>
       <div id="paypal-button-container-P-1HV82856NV161684BNIJFNFY" style="margin-top:14px;"></div>
     </div>
+
     <div class="plan-card">
       <div class="plan-header"><span class="plan-name">無料プラン</span></div>
       <div class="plan-price">¥0<span> / 月</span></div>
-      <div class="plan-desc">基本的な肌年齢診断のみ</div>
-      <ul class="plan-features"><li>肌年齢診断（月3回まで）</li><li>4項目スコア表示</li></ul>
+      <div class="plan-desc">まず試してみたい方に</div>
+      <ul class="plan-features">
+        <li>肌年齢診断（月3回まで）</li>
+        <li>4項目スコア表示</li>
+        <li>体調アンケート診断</li>
+      </ul>
       <button class="btn-plan sub" onclick="closeModal()">無料プランのまま続ける</button>
     </div>
+
+    <p style="text-align:center;font-size:11px;color:var(--muted);margin-top:16px;line-height:1.8;">
+      ✓ 7日間無料トライアル後に課金開始<br>
+      ✓ クレジットカード・PayPal対応<br>
+      ✓ いつでもマイページから解約可能
+    </p>
   </div>
 </div>
 
@@ -1533,7 +1567,14 @@ function deleteKarte(id){
   paypal.Buttons({style:btnStyle,createSubscription:(d,a)=>a.subscription.create({plan_id:'P-97V00018FX1263937NIJFLMA'}),onApprove:(d)=>{closeModal();showSuccess('プレミアムプランへようこそ！',d.subscriptionID);}}).render('#paypal-button-container-P-97V00018FX1263937NIJFLMA');
   paypal.Buttons({style:btnStyle,createSubscription:(d,a)=>a.subscription.create({plan_id:'P-1HV82856NV161684BNIJFNFY'}),onApprove:(d)=>{closeModal();showSuccess('プレミアム年払いプランへようこそ！',d.subscriptionID);}}).render('#paypal-button-container-P-1HV82856NV161684BNIJFNFY');
   function showSuccess(planName,subId){
-    document.getElementById('resultWrap').innerHTML+='<div style="background:#3A2A24;color:#FAF7F2;border-radius:16px;padding:20px;text-align:center;margin-top:16px;"><div style="font-size:22px;margin-bottom:8px;">🎉 先行登録完了！</div><div style="font-size:14px;opacity:0.9;margin-bottom:6px;">'+planName+'</div><div style="font-size:13px;opacity:0.75;margin-top:8px;line-height:1.6;">ご登録ありがとうございます！現在β版のため、全機能は順次リリース予定です。正式リリース時にメールでご連絡します。先行登録者様は永久割引価格でご利用いただけます。</div><div style="font-size:11px;opacity:0.5;margin-top:6px;">登録ID: '+subId+'</div></div>';
+    const msg=document.createElement('div');
+    msg.style.cssText='background:#3A2A24;color:#FAF7F2;border-radius:16px;padding:24px;text-align:center;margin-top:16px;';
+    msg.innerHTML=`<div style="font-size:28px;margin-bottom:10px;">🎉</div>
+      <div style="font-family:Cormorant Garamond,serif;font-size:20px;font-weight:300;margin-bottom:6px;">${planName}へようこそ！</div>
+      <div style="font-size:13px;opacity:0.8;margin-top:10px;line-height:1.8;">ご登録ありがとうございます。<br>全機能がすぐにご利用いただけます。<br>引き続き美肌ケアをお楽しみください✨</div>
+      <div style="font-size:10px;opacity:0.4;margin-top:10px;">登録ID: ${subId}</div>`;
+    document.getElementById('resultWrap').appendChild(msg);
+    msg.scrollIntoView({behavior:'smooth'});
   }
 </script>
 </body>
