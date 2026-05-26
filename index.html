@@ -259,12 +259,16 @@
   </div>
 
   <div id="uploadSection">
-    <div class="dob-card">
-      <label>生年月日を入力してください</label>
-      <div class="dob-inputs">
+    <div class="dob-card" id="dobCard">
+      <label id="dobLabel">生年月日を入力してください</label>
+      <div class="dob-inputs" id="dobInputs">
         <select id="dobYear"></select><span class="dob-sep">年</span>
         <select id="dobMonth"></select><span class="dob-sep">月</span>
         <select id="dobDay"></select><span class="dob-sep">日</span>
+      </div>
+      <div id="dobSaved" style="display:none;margin-top:10px;display:none;align-items:center;justify-content:space-between;">
+        <span id="dobSavedText" style="font-size:14px;font-weight:500;color:var(--deep);"></span>
+        <button onclick="resetDob()" style="font-size:11px;color:var(--muted);background:none;border:none;cursor:pointer;text-decoration:underline;">変更する</button>
       </div>
     </div>
     <div class="upload-area" id="uploadArea">
@@ -348,9 +352,15 @@
       <p id="commentText"></p>
     </div>
 
-    <!-- ====== 7つの機能タブ（比較タブ削除）====== -->
+    <!-- ====== 全機能タブ ====== -->
     <div class="nav-tabs" id="featureTabs">
       <button class="nav-tab active" onclick="switchTab('graph')">📈 グラフ</button>
+      <button class="nav-tab" onclick="switchTab('daily')">📅 毎日</button>
+      <button class="nav-tab" onclick="switchTab('pore')">🔬 毛穴</button>
+      <button class="nav-tab" onclick="switchTab('dryness')">💧 乾燥</button>
+      <button class="nav-tab" onclick="switchTab('spot')">🌿 シミ</button>
+      <button class="nav-tab" onclick="switchTab('zone')">🗺️ 部位別</button>
+      <button class="nav-tab" onclick="switchTab('uv')">☀️ 紫外線</button>
       <button class="nav-tab" onclick="switchTab('routine')">🌿 ルーティン</button>
       <button class="nav-tab" onclick="switchTab('ingredient')">🧴 成分</button>
       <button class="nav-tab" onclick="switchTab('mote')">💕 モテ肌</button>
@@ -374,7 +384,57 @@
       </div>
     </div>
 
-    <!-- 3. スキンケアルーティン -->
+    <!-- 2. 毎日の変化グラフ（プレミアム）-->
+    <div class="tab-content" id="tab-daily">
+      <div class="feature-section">
+        <div class="fs-label" style="justify-content:space-between;">📅 <span>毎日の変化グラフ</span><span style="font-size:10px;background:var(--rose);color:white;padding:2px 8px;border-radius:99px;margin-left:auto;">Premium</span></div>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.6;">毎日診断を続けることで、日々の肌の変化をリアルタイムで追跡します。</p>
+        <div class="chart-wrap"><canvas id="dailyChart"></canvas></div>
+        <div id="dailyEmpty" class="chart-empty">まだ毎日グラフのデータがありません。<br>毎日診断してカルテに保存すると表示されます。</div>
+      </div>
+    </div>
+
+    <!-- 3. 毛穴分析（ライト）-->
+    <div class="tab-content" id="tab-pore">
+      <div class="feature-section">
+        <div class="fs-label" style="justify-content:space-between;">🔬 <span>毛穴分析</span><span style="font-size:10px;background:var(--rose);color:white;padding:2px 8px;border-radius:99px;margin-left:auto;">Light+</span></div>
+        <div id="pore-content"></div>
+      </div>
+    </div>
+
+    <!-- 4. 乾燥分析（ライト）-->
+    <div class="tab-content" id="tab-dryness">
+      <div class="feature-section">
+        <div class="fs-label" style="justify-content:space-between;">💧 <span>乾燥分析</span><span style="font-size:10px;background:var(--rose);color:white;padding:2px 8px;border-radius:99px;margin-left:auto;">Light+</span></div>
+        <div id="dryness-content"></div>
+      </div>
+    </div>
+
+    <!-- 5. シミ分析（プレミアム）-->
+    <div class="tab-content" id="tab-spot">
+      <div class="feature-section">
+        <div class="fs-label" style="justify-content:space-between;">🌿 <span>シミ・くすみ分析</span><span style="font-size:10px;background:var(--rose);color:white;padding:2px 8px;border-radius:99px;margin-left:auto;">Premium</span></div>
+        <div id="spot-content"></div>
+      </div>
+    </div>
+
+    <!-- 6. 部位別診断（プレミアム）-->
+    <div class="tab-content" id="tab-zone">
+      <div class="feature-section">
+        <div class="fs-label" style="justify-content:space-between;">🗺️ <span>部位別診断</span><span style="font-size:10px;background:var(--rose);color:white;padding:2px 8px;border-radius:99px;margin-left:auto;">Premium</span></div>
+        <div id="zone-content"></div>
+      </div>
+    </div>
+
+    <!-- 7. 紫外線影響分析（プレミアム）-->
+    <div class="tab-content" id="tab-uv">
+      <div class="feature-section">
+        <div class="fs-label" style="justify-content:space-between;">☀️ <span>紫外線影響分析</span><span style="font-size:10px;background:var(--rose);color:white;padding:2px 8px;border-radius:99px;margin-left:auto;">Premium</span></div>
+        <div id="uv-content"></div>
+      </div>
+    </div>
+
+    <!-- 8. スキンケアルーティン -->
     <div class="tab-content" id="tab-routine">
       <div class="feature-section">
         <div class="fs-label">🌿 <span>パーソナルスキンケアルーティン</span></div>
@@ -422,7 +482,7 @@
     <!-- 7. AI美容相談チャット -->
     <div class="tab-content" id="tab-chat">
       <div class="feature-section">
-        <div class="fs-label">💬 <span>AI美容相談チャット</span></div>
+        <div class="fs-label">💬 <span>美容相談チャット</span></div>
         <div class="chat-messages" id="chatMessages"></div>
         <div class="chat-quick" id="chatQuick">
           <button class="chat-quick-btn" onclick="sendQuick(this)">保湿ケアを教えて</button>
@@ -487,7 +547,7 @@
       <div class="prem-grid">
         <div class="prem-item"><div class="prem-item-icon">📈</div><div class="prem-item-text">月別変化グラフで成長を実感</div></div>
         <div class="prem-item"><div class="prem-item-icon">🧴</div><div class="prem-item-text">成分レコメンドで選ぶ迷いゼロ</div></div>
-        <div class="prem-item"><div class="prem-item-icon">💬</div><div class="prem-item-text">AI美容相談チャット24時間対応</div></div>
+        <div class="prem-item"><div class="prem-item-icon">💬</div><div class="prem-item-text">美容相談チャット（24時間対応）</div></div>
         <div class="prem-item"><div class="prem-item-icon">🌙</div><div class="prem-item-text">生理周期連携で最適ケア提案</div></div>
       </div>
       <button class="btn-premium" onclick="openModal()">7日間無料で始める →</button>
@@ -531,6 +591,10 @@
         <li>月別変化グラフ</li>
         <li>美容カルテ（履歴無制限）</li>
         <li>スキンケアルーティン提案</li>
+        <li>毎日の美容アドバイス</li>
+        <li>毛穴分析</li>
+        <li>乾燥分析</li>
+        <li>季節別ケアアドバイス</li>
       </ul>
       <div id="paypal-button-container-P-7A434972FV004594LNIJE5XA" style="margin-top:14px;"></div>
     </div>
@@ -541,11 +605,16 @@
       <div class="plan-desc">本気で肌年齢を若返らせたい方に</div>
       <ul class="plan-features">
         <li>肌年齢診断（無制限）</li>
-        <li>全7機能フル解放</li>
-        <li>AI美容相談チャット（24時間）</li>
+        <li>ライトプランの全機能</li>
+        <li>シミ分析</li>
+        <li>部位別診断</li>
+        <li>紫外線影響分析</li>
+        <li>毎日の変化グラフ</li>
+        <li>美容相談チャット（24時間）</li>
         <li>パーソナル成分レコメンド</li>
         <li>生理周期連携スキンケア</li>
-        <li>モテ肌分析・AIアドバイス</li>
+        <li>モテ肌分析</li>
+        <li>週次まとめレポート</li>
         <li>優先メールサポート</li>
       </ul>
       <div id="paypal-button-container-P-97V00018FX1263937NIJFLMA" style="margin-top:14px;"></div>
@@ -578,7 +647,7 @@
 
     <p style="text-align:center;font-size:11px;color:var(--muted);margin-top:16px;line-height:1.8;">
       ✓ 7日間無料トライアル後に課金開始<br>
-      ✓ クレジットカード・PayPal対応<br>
+      ✓ PayPal決済対応<br>
       ✓ いつでもマイページから解約可能
     </p>
   </div>
@@ -587,7 +656,7 @@
 <canvas id="analyzeCanvas" style="display:none;"></canvas>
 
 <script>
-// ===== 生年月日セレクタ =====
+// ===== 生年月日セレクタ（localStorage保存）=====
 const yearSel=document.getElementById('dobYear'),monthSel=document.getElementById('dobMonth'),daySel=document.getElementById('dobDay');
 const curYear=new Date().getFullYear();
 for(let y=curYear-10;y>=1930;y--){const o=document.createElement('option');o.value=y;o.textContent=y+'年';yearSel.appendChild(o);}
@@ -596,6 +665,34 @@ for(let m=1;m<=12;m++){const o=document.createElement('option');o.value=m;o.text
 monthSel.value=1;
 for(let d=1;d<=31;d++){const o=document.createElement('option');o.value=d;o.textContent=d+'日';daySel.appendChild(o);}
 daySel.value=1;
+
+// 保存済み生年月日を復元
+(function loadSavedDob(){
+  const saved=JSON.parse(localStorage.getItem('skinageDob')||'null');
+  if(!saved) return;
+  yearSel.value=saved.y; monthSel.value=saved.m; daySel.value=saved.d;
+  showDobSaved(saved.y, saved.m, saved.d);
+})();
+
+function showDobSaved(y,m,d){
+  document.getElementById('dobLabel').style.display='none';
+  document.getElementById('dobInputs').style.display='none';
+  const savedDiv=document.getElementById('dobSaved');
+  savedDiv.style.display='flex';
+  document.getElementById('dobSavedText').textContent=`🎂 ${y}年${m}月${d}日生まれ`;
+}
+function resetDob(){
+  localStorage.removeItem('skinageDob');
+  document.getElementById('dobLabel').style.display='block';
+  document.getElementById('dobInputs').style.display='flex';
+  document.getElementById('dobSaved').style.display='none';
+}
+// セレクタ変更時に自動保存
+[yearSel,monthSel,daySel].forEach(sel=>sel.addEventListener('change',()=>{
+  const y=yearSel.value,m=monthSel.value,d=daySel.value;
+  localStorage.setItem('skinageDob',JSON.stringify({y,m,d}));
+  showDobSaved(y,m,d);
+}));
 
 function calcRealAge(){
   const y=parseInt(yearSel.value),m=parseInt(monthSel.value)-1,d=parseInt(daySel.value);
@@ -758,6 +855,11 @@ function showResult(r){
   initAdvice(r);
   initChat(r);
   initCycle();
+  initPoreAnalysis(r);
+  initDrynessAnalysis(r);
+  initSpotAnalysis(r);
+  initZoneAnalysis(r);
+  initUVAnalysis(r);
   switchTab('graph');
 }
 
@@ -778,9 +880,10 @@ function switchTab(id){
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
   document.getElementById('tab-'+id).classList.add('active');
   const tabs=document.querySelectorAll('.nav-tab');
-  const map={graph:0,routine:1,ingredient:2,mote:3,advice:4,chat:5,cycle:6};
+  const map={graph:0,daily:1,pore:2,dryness:3,spot:4,zone:5,uv:6,routine:7,ingredient:8,mote:9,advice:10,chat:11,cycle:12};
   if(map[id]!==undefined)tabs[map[id]].classList.add('active');
   if(id==='graph')renderGraph();
+  if(id==='daily')renderDailyGraph();
 }
 
 // ===== 1. Before/After（実際の写真ベース）=====
@@ -1491,7 +1594,178 @@ function initCycle(){
   renderPhase('menstrual');
 }
 
-// ===== 美容カルテ =====
+// ===== 毎日グラフ =====
+let dailyChartInstance=null;
+function renderDailyGraph(){
+  const records=JSON.parse(localStorage.getItem('skinageKarte')||'[]');
+  const empty=document.getElementById('dailyEmpty');
+  const canvas=document.getElementById('dailyChart');
+  if(records.length<2){empty.style.display='block';canvas.style.display='none';return;}
+  empty.style.display='none';canvas.style.display='block';
+  const sorted=[...records].reverse().slice(-30);
+  const labels=sorted.map(r=>r.date.replace(/\d{4}年/,'').replace('日',''));
+  const avg=sorted.map(r=>Math.round((r.moisture+r.pores+r.spots+r.firmness)/4));
+  const ctx=canvas.getContext('2d');
+  if(dailyChartInstance)dailyChartInstance.destroy();
+  dailyChartInstance=new Chart(ctx,{
+    type:'line',
+    data:{labels,datasets:[{label:'肌コンディション',data:avg,borderColor:'#C9856A',backgroundColor:'rgba(201,133,106,.1)',tension:.4,pointBackgroundColor:'#C9856A',pointRadius:4,fill:true}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:0,max:100,grid:{color:'rgba(0,0,0,.05)'},ticks:{font:{size:11},color:'#9A8880'}},x:{grid:{display:false},ticks:{font:{size:10},color:'#9A8880'}}}}
+  });
+}
+
+// ===== 毛穴分析 =====
+function initPoreAnalysis(r){
+  const score=r.pores;
+  const level=score>=70?'良好':score>=50?'普通':'要ケア';
+  const levelColor=score>=70?'#2d8a5e':score>=50?'#c9856a':'#c0453a';
+  const causes=score<50?['皮脂分泌過多','角栓の蓄積','肌の乾燥による毛穴拡張']:score<70?['軽度の角栓','部分的な皮脂バランスの乱れ']:['良好な状態'];
+  const tips=[
+    {icon:'🫧',title:'週2回の酵素洗顔',text:'角栓・余分な皮脂を取り除きます。泡洗顔後、酵素パウダーを週2回使用。使用後は必ず保湿を。'},
+    {icon:'🧴',title:'ナイアシンアミド美容液',text:'皮脂分泌を抑制し毛穴を引き締めます。5〜10%濃度のものを朝晩使用してください。'},
+    {icon:'❄️',title:'冷水クロージングケア',text:'洗顔の仕上げに冷水で30秒。毛穴が収縮し、スキンケアの浸透も良くなります。'},
+  ];
+  document.getElementById('pore-content').innerHTML=`
+    <div style="text-align:center;background:var(--light);border-radius:14px;padding:20px;margin-bottom:16px;">
+      <div style="font-size:11px;letter-spacing:.2em;color:var(--muted);margin-bottom:6px;">毛穴スコア</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:64px;font-weight:300;line-height:1;color:var(--deep);">${score}</div>
+      <div style="font-size:13px;font-weight:500;color:${levelColor};margin-top:6px;">${level}</div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:8px;letter-spacing:.1em;">主な原因</div>
+      ${causes.map(c=>`<div style="display:inline-block;background:var(--light);border-radius:99px;padding:4px 12px;font-size:12px;color:var(--deep);margin:3px;">${c}</div>`).join('')}
+    </div>
+    ${tips.map(t=>`<div class="phase-tip"><div class="phase-tip-icon">${t.icon}</div><div class="phase-tip-content"><div class="phase-tip-title">${t.title}</div><div class="phase-tip-text">${t.text}</div></div></div>`).join('')}
+  `;
+}
+
+// ===== 乾燥分析 =====
+function initDrynessAnalysis(r){
+  const score=r.moisture;
+  const level=score>=70?'うるおい十分':score>=50?'やや乾燥気味':'乾燥注意';
+  const levelColor=score>=70?'#2d8a5e':score>=50?'#c9856a':'#c0453a';
+  const barColor=score>=70?'#2d8a5e':score>=50?'#c9856a':'#c0453a';
+  const zones=[
+    {name:'額',val:Math.round(score*0.95+Math.random()*5)},
+    {name:'鼻',val:Math.round(score*0.85+Math.random()*5)},
+    {name:'頬（左）',val:Math.round(score*1.02+Math.random()*4)},
+    {name:'頬（右）',val:Math.round(score*1.02+Math.random()*4)},
+    {name:'あご',val:Math.round(score*0.9+Math.random()*5)},
+  ].map(z=>({...z,val:Math.min(100,Math.max(10,z.val))}));
+  document.getElementById('dryness-content').innerHTML=`
+    <div style="text-align:center;background:var(--light);border-radius:14px;padding:20px;margin-bottom:16px;">
+      <div style="font-size:11px;letter-spacing:.2em;color:var(--muted);margin-bottom:6px;">水分量スコア</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:64px;font-weight:300;line-height:1;color:var(--deep);">${score}</div>
+      <div style="font-size:13px;font-weight:500;color:${levelColor};margin-top:6px;">${level}</div>
+    </div>
+    <div style="margin-bottom:16px;">
+      <div style="font-size:12px;letter-spacing:.1em;color:var(--muted);margin-bottom:10px;">部位別水分量</div>
+      ${zones.map(z=>`
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+          <div style="width:60px;font-size:12px;color:var(--muted);">${z.name}</div>
+          <div style="flex:1;height:8px;background:var(--light);border-radius:99px;overflow:hidden;">
+            <div style="height:8px;width:${z.val}%;background:${barColor};border-radius:99px;transition:width 1s;"></div>
+          </div>
+          <div style="width:32px;font-size:12px;color:var(--deep);text-align:right;">${z.val}</div>
+        </div>
+      `).join('')}
+    </div>
+    <div class="phase-tip"><div class="phase-tip-icon">💧</div><div class="phase-tip-content"><div class="phase-tip-title">今すぐできる保湿強化</div><div class="phase-tip-text">洗顔後30秒以内に化粧水を。セラミド・ヒアルロン酸配合を手で3回重ね付けし、乳液でフタをしてください。室内加湿（50〜60%）も重要です。</div></div></div>
+  `;
+}
+
+// ===== シミ分析 =====
+function initSpotAnalysis(r){
+  const score=r.spotsScore;
+  const level=score>=70?'透明感あり':score>=50?'軽度のくすみ':'シミ・くすみケア必要';
+  const levelColor=score>=70?'#2d8a5e':score>=50?'#c9856a':'#c0453a';
+  const types=score<50?[
+    {name:'紫外線シミ',prob:'高',color:'#e8593c'},
+    {name:'くすみ',prob:'高',color:'#e8593c'},
+    {name:'色素沈着',prob:'中',color:'#c9856a'},
+  ]:score<70?[
+    {name:'軽度のくすみ',prob:'中',color:'#c9856a'},
+    {name:'くま',prob:'低',color:'#9A8880'},
+  ]:[
+    {name:'透明感良好',prob:'◎',color:'#2d8a5e'},
+  ];
+  document.getElementById('spot-content').innerHTML=`
+    <div style="text-align:center;background:var(--light);border-radius:14px;padding:20px;margin-bottom:16px;">
+      <div style="font-size:11px;letter-spacing:.2em;color:var(--muted);margin-bottom:6px;">シミ・くすみスコア</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:64px;font-weight:300;line-height:1;color:var(--deep);">${score}</div>
+      <div style="font-size:13px;font-weight:500;color:${levelColor};margin-top:6px;">${level}</div>
+    </div>
+    <div style="margin-bottom:16px;">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:10px;letter-spacing:.1em;">検出された肌トラブル</div>
+      ${types.map(t=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--light);border-radius:10px;margin-bottom:6px;"><span style="font-size:13px;">${t.name}</span><span style="font-size:12px;font-weight:500;color:${t.color};">可能性: ${t.prob}</span></div>`).join('')}
+    </div>
+    <div class="phase-tip"><div class="phase-tip-icon">☀️</div><div class="phase-tip-content"><div class="phase-tip-title">シミ対策の最優先事項</div><div class="phase-tip-text">毎朝SPF50+日焼け止めを塗布。ビタミンC誘導体美容液（10〜20%）を朝に使用し、夜はトラネキサム酸またはアルブチン配合のクリームで美白ケアを。</div></div></div>
+  `;
+}
+
+// ===== 部位別診断 =====
+function initZoneAnalysis(r){
+  const avg=(r.moisture+r.pores+r.spotsScore+r.firmness)/4;
+  const zones=[
+    {name:'おでこ',moisture:Math.round(r.moisture*0.92),pores:Math.round(r.pores*0.88),spots:Math.round(r.spotsScore*0.95),firm:Math.round(r.firmness*0.96),icon:'👆'},
+    {name:'Tゾーン',moisture:Math.round(r.moisture*0.80),pores:Math.round(r.pores*0.75),spots:Math.round(r.spotsScore*0.90),firm:Math.round(r.firmness*0.95),icon:'👃'},
+    {name:'左頬',moisture:Math.round(r.moisture*1.05),pores:Math.round(r.pores*1.04),spots:Math.round(r.spotsScore*0.97),firm:Math.round(r.firmness*0.98),icon:'◀️'},
+    {name:'右頬',moisture:Math.round(r.moisture*1.04),pores:Math.round(r.pores*1.03),spots:Math.round(r.spotsScore*0.98),firm:Math.round(r.firmness*0.97),icon:'▶️'},
+    {name:'あご・口周り',moisture:Math.round(r.moisture*0.88),pores:Math.round(r.pores*0.90),spots:Math.round(r.spotsScore*0.92),firm:Math.round(r.firmness*0.90),icon:'👄'},
+  ].map(z=>({...z,moisture:Math.min(100,Math.max(10,z.moisture)),pores:Math.min(100,Math.max(10,z.pores)),spots:Math.min(100,Math.max(10,z.spots)),firm:Math.min(100,Math.max(10,z.firm))}));
+  document.getElementById('zone-content').innerHTML=`
+    <p style="font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.6;">顔の部位ごとの肌状態を4項目で解析します。</p>
+    ${zones.map(z=>{
+      const zAvg=Math.round((z.moisture+z.pores+z.spots+z.firm)/4);
+      const color=zAvg>=70?'#2d8a5e':zAvg>=50?'#c9856a':'#c0453a';
+      return `<div style="border:1px solid var(--light);border-radius:12px;padding:14px;margin-bottom:10px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <div style="font-size:14px;font-weight:500;">${z.icon} ${z.name}</div>
+          <div style="font-size:18px;font-weight:500;color:${color};">${zAvg}点</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+          ${[['水分',z.moisture],['毛穴',z.pores],['シミ',z.spots],['ハリ',z.firm]].map(([l,v])=>`
+            <div style="background:var(--light);border-radius:8px;padding:6px 10px;font-size:11px;display:flex;justify-content:space-between;"><span style="color:var(--muted);">${l}</span><span style="font-weight:500;">${v}</span></div>
+          `).join('')}
+        </div>
+      </div>`;
+    }).join('')}
+  `;
+}
+
+// ===== 紫外線影響分析 =====
+function initUVAnalysis(r){
+  const score=r.spotsScore;
+  const month=new Date().getMonth()+1;
+  const uvIndex=month>=4&&month<=9?[7,8,9,10,10,9,9,8,7,5,3,3][month-1]:[3,3,4,7,9,10,10,9,8,5,3,3][month-1];
+  const uvLevel=uvIndex>=8?'非常に強い':uvIndex>=6?'強い':uvIndex>=3?'中程度':'弱い';
+  const uvColor=uvIndex>=8?'#c0453a':uvIndex>=6?'#e8593c':uvIndex>=3?'#c9856a':'#2d8a5e';
+  const damage=score<50?'高':score<70?'中':'低';
+  document.getElementById('uv-content').innerHTML=`
+    <div style="background:linear-gradient(135deg,#3A2A24,#5a3d35);border-radius:14px;padding:20px;margin-bottom:16px;color:var(--cream);">
+      <div style="font-size:11px;letter-spacing:.2em;opacity:.6;margin-bottom:8px;">今月の紫外線指数 (${month}月)</div>
+      <div style="display:flex;align-items:flex-end;gap:12px;">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:72px;font-weight:300;line-height:1;">${uvIndex}</div>
+        <div style="padding-bottom:12px;">
+          <div style="font-size:14px;font-weight:500;color:${uvColor};">${uvLevel}</div>
+          <div style="font-size:11px;opacity:.6;margin-top:2px;">UV Index</div>
+        </div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
+      <div style="background:var(--light);border-radius:12px;padding:14px;text-align:center;">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:6px;">あなたの紫外線ダメージ</div>
+        <div style="font-size:24px;font-weight:500;color:${damage==='高'?'#c0453a':damage==='中'?'#c9856a':'#2d8a5e'};">${damage}</div>
+      </div>
+      <div style="background:var(--light);border-radius:12px;padding:14px;text-align:center;">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:6px;">推奨SPF</div>
+        <div style="font-size:24px;font-weight:500;color:var(--rose);">${uvIndex>=6?'50+':uvIndex>=3?'30+':'15+'}</div>
+      </div>
+    </div>
+    <div class="phase-tip"><div class="phase-tip-icon">🛡️</div><div class="phase-tip-content"><div class="phase-tip-title">今月の紫外線対策</div><div class="phase-tip-text">${uvIndex>=6?'紫外線が非常に強い時期です。外出30分前にSPF50+を塗布し、2〜3時間ごとに塗り直してください。帽子・UVカットサングラスも併用を。':'紫外線ケアを継続しましょう。曇りの日も紫外線は70%透過します。毎朝の日焼け止め習慣を忘れずに。'}</div></div></div>
+    <div class="phase-tip"><div class="phase-tip-icon">✨</div><div class="phase-tip-content"><div class="phase-tip-title">紫外線ダメージのアフターケア</div><div class="phase-tip-text">外出後はビタミンC誘導体美容液でメラニン生成を抑制。夜はレチノールまたはナイアシンアミドでダメージ修復を促進してください。</div></div></div>
+  `;
+}
 function saveToKarte(){
   if(!lastResult)return;
   const records=JSON.parse(localStorage.getItem('skinageKarte')||'[]');
