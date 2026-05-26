@@ -613,7 +613,7 @@
   <div class="modal">
     <button class="modal-close" onclick="closeModal()">✕</button>
     <h2>プランを選ぶ</h2>
-    <p class="modal-sub">最初の7日間は完全無料。いつでも解約できます。</p>
+    <p class="modal-sub">7日間の無料トライアル付き。PayPal決済対応。</p>
 
     <div class="plan-card">
       <div class="plan-header"><span class="plan-name">ライトプラン</span></div>
@@ -1861,7 +1861,34 @@ function deleteKarte(id){
 }
 </script>
 
-<script src="https://www.paypal.com/sdk/js?client-id=AfUn22zK4UsNWfThHlT_1sqvEi8gmtXHZ4jWMYafWPrX4bBorPFvMY8ZTuZAqTfVXygpK95YmdkZsj-N&vault=true&intent=subscription" data-sdk-integration-source="button-factory"></script>
+<script src="https://www.paypal.com/sdk/js?client-id=AfUn22zK4UsNWfThHlT_1sqvEi8gmtXHZ4jWMYafWPrX4bBorPFvMY8ZTuZAqTfVXygpK95YmdkZsj-N&vault=true&intent=subscription&components=buttons" data-sdk-integration-source="button-factory"></script>
+<script>
+  const btnStyle={shape:'rect',color:'gold',layout:'vertical',label:'subscribe'};
+  paypal.Buttons({style:btnStyle,createSubscription:(d,a)=>a.subscription.create({plan_id:'P-7A434972FV004594LNIJE5XA'}),onApprove:(d)=>{closeModal();showSuccess('ライトプラン',d.subscriptionID);}}).render('#paypal-button-container-P-7A434972FV004594LNIJE5XA');
+  paypal.Buttons({style:btnStyle,createSubscription:(d,a)=>a.subscription.create({plan_id:'P-97V00018FX1263937NIJFLMA'}),onApprove:(d)=>{closeModal();showSuccess('プレミアムプラン',d.subscriptionID);}}).render('#paypal-button-container-P-97V00018FX1263937NIJFLMA');
+  paypal.Buttons({style:btnStyle,createSubscription:(d,a)=>a.subscription.create({plan_id:'P-1HV82856NV161684BNIJFNFY'}),onApprove:(d)=>{closeModal();showSuccess('プレミアム年払いプラン',d.subscriptionID);}}).render('#paypal-button-container-P-1HV82856NV161684BNIJFNFY');
+  function showSuccess(planName,subId){
+    const msg=document.createElement('div');
+    msg.style.cssText='background:#3A2A24;color:#FAF7F2;border-radius:16px;padding:24px;text-align:center;margin-top:16px;';
+    msg.innerHTML=`<div style="font-size:28px;margin-bottom:10px;">🎉</div>
+      <div style="font-family:Cormorant Garamond,serif;font-size:20px;font-weight:300;margin-bottom:6px;">${planName}へようこそ！</div>
+      <div style="font-size:13px;opacity:0.8;margin-top:10px;line-height:1.8;">ご登録ありがとうございます。<br>全機能がすぐにご利用いただけます。<br>引き続き美肌ケアをお楽しみください✨</div>
+      <div style="font-size:10px;opacity:0.4;margin-top:10px;">登録ID: ${subId}</div>`;
+    document.getElementById('resultWrap').appendChild(msg);
+    msg.scrollIntoView({behavior:'smooth'});
+  }
+  // PayPalが自動挿入する文言を監視・削除
+  const ppObserver = new MutationObserver(() => {
+    document.querySelectorAll('*').forEach(el => {
+      if(el.childNodes) el.childNodes.forEach(node => {
+        if(node.nodeType===3 && node.textContent.includes('クレジットカード登録不要')) node.textContent='';
+      });
+    });
+  });
+  ppObserver.observe(document.body, {childList:true, subtree:true});
+</script>
+</body>
+</html>
 <script>
   const btnStyle={shape:'rect',color:'gold',layout:'vertical',label:'subscribe'};
   paypal.Buttons({style:btnStyle,createSubscription:(d,a)=>a.subscription.create({plan_id:'P-7A434972FV004594LNIJE5XA'}),onApprove:(d)=>{closeModal();showSuccess('ライトプランへようこそ！',d.subscriptionID);}}).render('#paypal-button-container-P-7A434972FV004594LNIJE5XA');
