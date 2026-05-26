@@ -1851,7 +1851,6 @@ function deleteKarte(id){
     msg.scrollIntoView({behavior:'smooth'});
   }
 
-  // PayPalが自動挿入する「クレジットカード登録不要・いつでも解約可能」を監視・削除
   const ppObserver = new MutationObserver(() => {
     document.querySelectorAll('[data-pp-message],[class*="pp-tlc"],[class*="paypal-powered"],[class*="legal-text"],[class*="funding-source-label"]').forEach(el => {
       if(el.textContent.includes('クレジット') || el.textContent.includes('解約') || el.textContent.includes('登録不要')){
@@ -1860,7 +1859,6 @@ function deleteKarte(id){
     });
     // テキストノードも走査
     document.querySelectorAll('.modal *').forEach(el => {
-      if(el.children.length===0 && el.textContent.includes('クレジットカード登録不要')){
         el.style.display='none';
       }
     });
