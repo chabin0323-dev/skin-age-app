@@ -82,7 +82,15 @@
   .prem-item-text { font-size:12px; color:rgba(250,247,242,.8); line-height:1.4; }
   .btn-premium { width:100%; padding:16px; background:var(--rose); color:white; border:none; border-radius:12px; font-family:'DM Sans',sans-serif; font-size:15px; letter-spacing:.05em; cursor:pointer; transition:background .2s; position:relative; z-index:1; }
   .btn-premium:hover { background:#b5735a; }
-  .prem-note { text-align:center; font-size:11px; color:rgba(250,247,242,.35); margin-top:10px; position:relative; z-index:1; }
+  .prem-note { display:none !important; }
+  /* PayPal・旧コード由来の文言を完全非表示 */
+  [class*="prem-note"], .premium-cta > p:last-of-type { display:none !important; }
+  /* PayPalが自動挿入する文言を非表示 */
+  [data-pp-message], .paypal-powered-by, .pp-tlc { display:none !important; }
+  #paypal-button-container-P-7A434972FV004594LNIJE5XA ~ *,
+  #paypal-button-container-P-97V00018FX1263937NIJFLMA ~ *,
+  #paypal-button-container-P-1HV82856NV161684BNIJFNFY ~ * { }
+  .paypal-button-label-container .paypal-button-text { font-size:13px !important; }
   .btn-retry { width:100%; padding:14px; background:transparent; border:1px solid var(--blush); border-radius:12px; font-family:'DM Sans',sans-serif; font-size:13px; color:var(--muted); cursor:pointer; margin-top:12px; }
   .btn-retry:hover { border-color:var(--rose); color:var(--rose); }
   .q-btn { flex:1; padding:8px 4px; border:1px solid var(--blush); border-radius:10px; font-size:12px; color:var(--muted); background:none; cursor:pointer; transition:all .2s; font-family:'DM Sans',sans-serif; white-space:nowrap; }
@@ -1842,6 +1850,22 @@ function deleteKarte(id){
     document.getElementById('resultWrap').appendChild(msg);
     msg.scrollIntoView({behavior:'smooth'});
   }
+
+  // PayPalが自動挿入する「クレジットカード登録不要・いつでも解約可能」を監視・削除
+  const ppObserver = new MutationObserver(() => {
+    document.querySelectorAll('[data-pp-message],[class*="pp-tlc"],[class*="paypal-powered"],[class*="legal-text"],[class*="funding-source-label"]').forEach(el => {
+      if(el.textContent.includes('クレジット') || el.textContent.includes('解約') || el.textContent.includes('登録不要')){
+        el.style.display='none';
+      }
+    });
+    // テキストノードも走査
+    document.querySelectorAll('.modal *').forEach(el => {
+      if(el.children.length===0 && el.textContent.includes('クレジットカード登録不要')){
+        el.style.display='none';
+      }
+    });
+  });
+  ppObserver.observe(document.body, {childList:true, subtree:true});
 </script>
 </body>
 </html>
