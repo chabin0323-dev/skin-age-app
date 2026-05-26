@@ -104,8 +104,9 @@
   .modal-close { position:absolute; top:16px; right:16px; background:none; border:none; font-size:22px; color:var(--muted); cursor:pointer; }
   .modal h2 { font-family:'Cormorant Garamond',serif; font-size:26px; font-weight:300; color:var(--deep); margin-bottom:6px; }
   .modal .modal-sub { font-size:13px; color:var(--muted); margin-bottom:24px; line-height:1.6; }
-  .plan-card { border:1px solid var(--blush); border-radius:16px; padding:20px; margin-bottom:12px; }
+  .plan-card { border:1px solid var(--blush); border-radius:16px; padding:20px; margin-bottom:12px; cursor:pointer; transition:all .2s; }
   .plan-card.featured { border-color:var(--rose); border-width:2px; }
+  .plan-card.selected { border-color:var(--rose); border-width:2px; box-shadow:0 0 0 3px rgba(201,133,106,.25); background:rgba(201,133,106,.04); }
   .plan-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
   .plan-name { font-size:15px; font-weight:500; color:var(--deep); }
   .plan-best { background:var(--rose); color:white; font-size:10px; padding:3px 8px; border-radius:99px; letter-spacing:.1em; }
@@ -727,7 +728,18 @@ function calcRealAge(){
   if(today<new Date(today.getFullYear(),m,d))age--;
   return age;
 }
-function openModal(){ document.getElementById('modalBg').classList.add('open'); }
+function openModal(){
+  document.getElementById('modalBg').classList.add('open');
+  // プランカード選択機能を初期化
+  setTimeout(()=>{
+    document.querySelectorAll('.plan-card').forEach(card=>{
+      card.addEventListener('click', function(){
+        document.querySelectorAll('.plan-card').forEach(c=>c.classList.remove('selected'));
+        this.classList.add('selected');
+      });
+    });
+  }, 100);
+}
 function closeModal(){ document.getElementById('modalBg').classList.remove('open'); }
 function closeModalBg(e){ if(e.target===document.getElementById('modalBg')) closeModal(); }
 
