@@ -560,6 +560,33 @@
       </div>
       <button class="btn-premium" onclick="openModal()">7日間無料で始める →</button>
     </div>
+    <script>
+    // ページ読み込み時にクレジットカード文言を強制削除
+    (function removeCreditText(){
+      function sweep(){
+        document.querySelectorAll('*').forEach(function(el){
+          if(el.childNodes){
+            el.childNodes.forEach(function(node){
+              if(node.nodeType===3 && node.textContent.includes('クレジットカード登録不要')){
+                node.textContent='';
+              }
+            });
+          }
+          if(el.tagName && el.offsetParent!==null){
+            var t=el.innerText||'';
+            if(t.trim()==='クレジットカード登録不要・いつでも解約可能' || t.trim()==='クレジットカード登録不要 · いつでも解約可能'){
+              el.style.display='none';
+            }
+          }
+        });
+      }
+      if(document.readyState==='loading'){
+        document.addEventListener('DOMContentLoaded', sweep);
+      } else { sweep(); }
+      setTimeout(sweep, 500);
+      setTimeout(sweep, 1500);
+    })();
+    </script>
 
     <button class="btn-save" id="saveBtn" onclick="saveToKarte()" style="display:none;">📋 美容カルテに保存する</button>
     <button class="btn-retry" onclick="reset()">もう一度診断する</button>
