@@ -329,6 +329,11 @@
       </div>
     </div>
     <button class="btn-primary" id="analyzeBtn" disabled onclick="analyze()">診断する</button>
+    <!-- 無料版回数表示 -->
+    <div id="freePlanNotice" style="text-align:center;margin-top:10px;font-size:12px;color:var(--muted);line-height:1.7;">
+      無料版は<strong style="color:var(--rose);">月3回まで</strong>診断できます。<br>
+      <span id="diagCountDisplay"></span>
+    </div>
   </div>
 
   <div id="loadingWrap">
@@ -690,7 +695,23 @@
 <canvas id="analyzeCanvas" style="display:none;"></canvas>
 
 <script>
-// ===== プレミアム要求 =====
+// ===== 無料版残り回数を表示 =====
+function updateDiagNotice(){
+  const notice=document.getElementById('freePlanNotice');
+  const countEl=document.getElementById('diagCountDisplay');
+  if(!notice||!countEl) return;
+  if(isPremium()){
+    notice.style.display='none';
+    return;
+  }
+  const count=getDiagCount();
+  const remaining=Math.max(0,3-count);
+  if(remaining===0){
+    countEl.innerHTML='<span style="color:var(--rose);font-weight:500;">今月の無料診断回数を使い切りました</span>';
+  } else {
+    countEl.innerHTML=`今月の残り回数：<strong style="color:var(--rose);">${remaining}回</strong>`;
+  }
+}
 function requirePremium(){
   if(isPremium()){
     // プレミアムなのにロックタブが残っている場合は解放
@@ -727,6 +748,7 @@ function unlockAllTabs(){
 // ===== ページ読み込み時：プレミアム判定 =====
 window.addEventListener('DOMContentLoaded',()=>{
   if(isPremium()) unlockAllTabs();
+  updateDiagNotice();
 });
 const yearSel=document.getElementById('dobYear'),monthSel=document.getElementById('dobMonth'),daySel=document.getElementById('dobDay');
 const curYear=new Date().getFullYear();
@@ -936,6 +958,7 @@ function analyze(){
       return;
     }
     incDiagCount();
+    updateDiagNotice();
   }
   document.getElementById('uploadSection').style.display='none';
   document.getElementById('loadingWrap').style.display='block';
