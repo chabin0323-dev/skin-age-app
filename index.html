@@ -363,21 +363,21 @@
       <p id="commentText"></p>
     </div>
 
-    <!-- ====== 全機能タブ ====== -->
+    <!-- ====== タブナビ ====== -->
     <div class="nav-tabs" id="featureTabs">
       <button class="nav-tab active" onclick="switchTab('graph')">📈 グラフ</button>
-      <button class="nav-tab" onclick="switchTab('daily')">📅 毎日</button>
-      <button class="nav-tab" onclick="switchTab('pore')">🔬 毛穴</button>
-      <button class="nav-tab" onclick="switchTab('dryness')">💧 乾燥</button>
-      <button class="nav-tab" onclick="switchTab('spot')">🌿 シミ</button>
-      <button class="nav-tab" onclick="switchTab('zone')">🗺️ 部位別</button>
-      <button class="nav-tab" onclick="switchTab('uv')">☀️ 紫外線</button>
-      <button class="nav-tab" onclick="switchTab('routine')">🌿 ルーティン</button>
-      <button class="nav-tab" onclick="switchTab('ingredient')">🧴 成分</button>
-      <button class="nav-tab" onclick="switchTab('mote')">💕 モテ肌</button>
-      <button class="nav-tab" onclick="switchTab('advice')">✨ アドバイス</button>
-      <button class="nav-tab" onclick="switchTab('chat')">💬 相談</button>
-      <button class="nav-tab" onclick="switchTab('cycle')">🌙 周期ケア</button>
+      <button class="nav-tab locked-tab" onclick="requirePremium()">📅 毎日 🔒</button>
+      <button class="nav-tab locked-tab" onclick="requirePremium()">🔬 毛穴 🔒</button>
+      <button class="nav-tab locked-tab" onclick="requirePremium()">💧 乾燥 🔒</button>
+      <button class="nav-tab locked-tab" onclick="requirePremium()">🌿 シミ 🔒</button>
+      <button class="nav-tab locked-tab" onclick="requirePremium()">🗺️ 部位別 🔒</button>
+      <button class="nav-tab locked-tab" onclick="requirePremium()">☀️ 紫外線 🔒</button>
+      <button class="nav-tab locked-tab" onclick="requirePremium()">🌿 ルーティン 🔒</button>
+      <button class="nav-tab locked-tab" onclick="requirePremium()">🧴 成分 🔒</button>
+      <button class="nav-tab locked-tab" onclick="requirePremium()">💕 モテ肌 🔒</button>
+      <button class="nav-tab locked-tab" onclick="requirePremium()">✨ アドバイス 🔒</button>
+      <button class="nav-tab locked-tab" onclick="requirePremium()">💬 相談 🔒</button>
+      <button class="nav-tab locked-tab" onclick="requirePremium()">🌙 周期ケア 🔒</button>
     </div>
 
     <!-- 1. 月別変化グラフ（先頭タブ）-->
@@ -548,13 +548,29 @@
       </div>
     </div>
 
-    <div class="premium-cta" style="margin-top:16px;">
+    <!-- キラキラ フル解放ボタン（未登録時のみ表示）-->
+    <div id="shimmerCta" style="margin-top:16px;text-align:center;">
+      <div style="font-size:44px;animation:unlockPulse 1.5s ease-in-out infinite;display:inline-block;margin-bottom:8px;">🔓</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.7;">グラフ・毛穴・シミ・部位別・成分など<br><strong style="color:var(--deep);">12の機能が今すぐフル解放！</strong></p>
+      <button onclick="openModal()" style="width:100%;padding:20px;border-radius:9999px;background:linear-gradient(90deg,#C9856A,#e8a882,#f5c5a0,#e8a882,#C9856A);background-size:200% auto;animation:shimmerBtn 2s linear infinite;font-family:'DM Sans',sans-serif;font-weight:700;color:white;font-size:16px;border:none;cursor:pointer;box-shadow:0 0 30px rgba(201,133,106,.6),0 0 60px rgba(201,133,106,.3);letter-spacing:.05em;line-height:1.5;">
+        ✨ 肌ケアをフル解放する<br>
+        <span style="font-size:13px;font-weight:400;opacity:.9;">7日間無料 → ¥980/月</span>
+      </button>
+      <p style="font-size:11px;color:var(--muted);margin-top:10px;">PayPal決済対応 · 解約はメールから簡単に</p>
+    </div>
+    <style>
+      @keyframes shimmerBtn{0%{background-position:200% center}100%{background-position:-200% center}}
+      @keyframes unlockPulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.15);opacity:.8}}
+      .locked-tab{opacity:.5;cursor:pointer;position:relative;}
+      .locked-tab:hover{opacity:.7;border-color:var(--rose)!important;}
+    </style>
+
+    <div class="premium-cta" id="premiumCtaOld" style="display:none;margin-top:16px;">
       <div class="prem-header">
         <span class="prem-badge">✦ Premium</span>
         <span class="prem-trial">7日間 無料トライアル</span>
       </div>
       <h3>肌年齢を若返らせる<br>本格ケアを始めよう</h3>
-      <p class="prem-sub">プレミアムプランでは全7機能がフル解放。AIアドバイス・成分レコメンド・生理周期ケアなど、あなただけのパーソナルスキンケアを毎日サポートします。</p>
       <div class="prem-grid">
         <div class="prem-item"><div class="prem-item-icon">📈</div><div class="prem-item-text">月別変化グラフで成長を実感</div></div>
         <div class="prem-item"><div class="prem-item-icon">🧴</div><div class="prem-item-text">成分レコメンドで選ぶ迷いゼロ</div></div>
@@ -598,9 +614,10 @@
       <a href="tokushoho.html" style="color:#9A8880;text-decoration:none;margin:0 8px;">特定商取引法に基づく表記</a>｜
       <a href="privacy.html" style="color:#9A8880;text-decoration:none;margin:0 8px;">プライバシーポリシー</a>
     </p>
-    <p style="text-align:center;margin-top:12px;font-size:11px;color:#c8b8b0;opacity:.6;">
+    <!-- アクセスカウンター（目立たず表示）-->
+    <p style="text-align:center;margin-top:14px;font-size:11px;color:var(--muted);opacity:.5;letter-spacing:.05em;">
       累計アクセス <span id="busuanzi_value_site_pv">--</span> ｜
-      訪問ユーザー <span id="busuanzi_value_site_uv">--</span>
+      ユニーク訪問者 <span id="busuanzi_value_site_uv">--</span>
     </p>
   </div>
 
@@ -671,16 +688,43 @@
 <canvas id="analyzeCanvas" style="display:none;"></canvas>
 
 <script>
+// ===== プレミアム要求 =====
+function requirePremium(){
+  if(isPremium()){
+    // プレミアムなのにロックタブが残っている場合は解放
+    unlockAllTabs();
+    return;
+  }
+  // キラキラボタンへスクロール
+  const cta=document.getElementById('shimmerCta');
+  if(cta){ cta.scrollIntoView({behavior:'smooth',block:'center'}); }
+  // ボタンを一瞬強調
+  const btn=cta?cta.querySelector('button'):null;
+  if(btn){ btn.style.transform='scale(1.03)'; setTimeout(()=>btn.style.transform='',300); }
+}
+
+// ===== プレミアム時：全タブ解放 =====
+function unlockAllTabs(){
+  const tabs=document.querySelectorAll('.nav-tab');
+  const tabIds=['graph','daily','pore','dryness','spot','zone','uv','routine','ingredient','mote','advice','chat','cycle'];
+  const labels=['📈 グラフ','📅 毎日','🔬 毛穴','💧 乾燥','🌿 シミ','🗺️ 部位別','☀️ 紫外線','🌿 ルーティン','🧴 成分','💕 モテ肌','✨ アドバイス','💬 相談','🌙 周期ケア'];
+  tabs.forEach((tab,i)=>{
+    tab.classList.remove('locked-tab');
+    tab.textContent=labels[i];
+    tab.onclick=()=>switchTab(tabIds[i]);
+  });
+  // キラキラボタン非表示
+  const cta=document.getElementById('shimmerCta');
+  if(cta) cta.style.display='none';
+  // プレミアム会員表示
+  const old=document.getElementById('premiumCtaOld');
+  if(old) old.innerHTML=`<div style="background:var(--deep);border-radius:16px;padding:16px 20px;text-align:center;margin-top:16px;"><span style="font-size:11px;letter-spacing:.2em;color:var(--blush);">✦ プレミアム会員 · 全機能解放中 ✦</span></div>`;
+  if(old) old.style.display='block';
+}
+
 // ===== ページ読み込み時：プレミアム判定 =====
 window.addEventListener('DOMContentLoaded',()=>{
-  if(isPremium()){
-    const cta=document.querySelector('.premium-cta');
-    if(cta) cta.innerHTML=`
-      <div style="text-align:center;padding:8px 0;">
-        <span style="font-size:11px;letter-spacing:.2em;color:var(--blush);">✦ プレミアム会員 ✦</span>
-        <p style="font-size:13px;color:rgba(250,247,242,.7);margin-top:6px;">全機能がご利用いただけます</p>
-      </div>`;
-  }
+  if(isPremium()) unlockAllTabs();
 });
 const yearSel=document.getElementById('dobYear'),monthSel=document.getElementById('dobMonth'),daySel=document.getElementById('dobDay');
 const curYear=new Date().getFullYear();
@@ -1913,6 +1957,7 @@ function deleteKarte(id){
     onApprove:(d)=>{
       setPremium(d.subscriptionID);
       closeModal();
+      unlockAllTabs();
       showSuccess('プレミアムプラン',d.subscriptionID);
     }
   }).render('#paypal-button-container-P-97V00018FX1263937NIJFLMA');
@@ -1923,6 +1968,7 @@ function deleteKarte(id){
     onApprove:(d)=>{
       setPremium(d.subscriptionID);
       closeModal();
+      unlockAllTabs();
       showSuccess('プレミアム年払いプラン',d.subscriptionID);
     }
   }).render('#paypal-button-container-P-1HV82856NV161684BNIJFNFY');
