@@ -255,6 +255,8 @@
   .tab-content { display:none; }
   .tab-content.active { display:block; animation:fadeUp .3s ease; }
 </style>
+<!-- busuanzi アクセスカウンター -->
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 </head>
 <body>
 <div class="container" id="container">
@@ -596,6 +598,10 @@
       <a href="tokushoho.html" style="color:#9A8880;text-decoration:none;margin:0 8px;">特定商取引法に基づく表記</a>｜
       <a href="privacy.html" style="color:#9A8880;text-decoration:none;margin:0 8px;">プライバシーポリシー</a>
     </p>
+    <p style="text-align:center;margin-top:12px;font-size:11px;color:#c8b8b0;opacity:.6;">
+      累計アクセス <span id="busuanzi_value_site_pv">--</span> ｜
+      訪問ユーザー <span id="busuanzi_value_site_uv">--</span>
+    </p>
   </div>
 
   <!-- 美容カルテ画面 -->
@@ -616,40 +622,20 @@
     <h2>プランを選ぶ</h2>
     <p class="modal-sub">7日間の無料トライアル付き。PayPal決済対応。</p>
 
-    <div class="plan-card">
-      <div class="plan-header"><span class="plan-name">ライトプラン</span></div>
-      <div class="plan-price">¥480<span> / 月</span></div>
-      <div class="plan-desc">毎日の肌変化を数字で追いたい方に</div>
-      <ul class="plan-features">
-        <li>肌年齢診断（月10回まで）</li>
-        <li>4項目スコア詳細表示</li>
-        <li>月別変化グラフ</li>
-        <li>美容カルテ（履歴無制限）</li>
-        <li>スキンケアルーティン提案</li>
-        <li>毎日の美容アドバイス</li>
-        <li>毛穴分析</li>
-        <li>乾燥分析</li>
-        <li>季節別ケアアドバイス</li>
-      </ul>
-      <div id="paypal-button-container-P-7A434972FV004594LNIJE5XA" style="margin-top:14px;"></div>
-    </div>
-
     <div class="plan-card featured">
       <div class="plan-header"><span class="plan-name">プレミアムプラン</span><span class="plan-best">おすすめ</span></div>
       <div class="plan-price">¥980<span> / 月</span></div>
       <div class="plan-desc">本気で肌年齢を若返らせたい方に</div>
       <ul class="plan-features">
         <li>肌年齢診断（無制限）</li>
-        <li>ライトプランの全機能</li>
-        <li>シミ分析</li>
-        <li>部位別診断</li>
-        <li>紫外線影響分析</li>
-        <li>毎日の変化グラフ</li>
-        <li>美容相談チャット（24時間）</li>
+        <li>月別・毎日の変化グラフ</li>
+        <li>毛穴・乾燥・シミ分析</li>
+        <li>部位別診断・紫外線影響分析</li>
+        <li>スキンケアルーティン提案</li>
         <li>パーソナル成分レコメンド</li>
+        <li>美容相談チャット（24時間）</li>
         <li>生理周期連携スキンケア</li>
-        <li>モテ肌分析</li>
-        <li>週次まとめレポート</li>
+        <li>モテ肌分析・美容アドバイス</li>
         <li>優先メールサポート</li>
       </ul>
       <div id="paypal-button-container-P-97V00018FX1263937NIJFLMA" style="margin-top:14px;"></div>
@@ -679,12 +665,23 @@
       </ul>
       <button class="btn-plan sub" onclick="closeModal()">無料プランのまま続ける</button>
     </div>
+  </div>
 </div>
 
 <canvas id="analyzeCanvas" style="display:none;"></canvas>
 
 <script>
-// ===== 生年月日セレクタ（localStorage保存）=====
+// ===== ページ読み込み時：プレミアム判定 =====
+window.addEventListener('DOMContentLoaded',()=>{
+  if(isPremium()){
+    const cta=document.querySelector('.premium-cta');
+    if(cta) cta.innerHTML=`
+      <div style="text-align:center;padding:8px 0;">
+        <span style="font-size:11px;letter-spacing:.2em;color:var(--blush);">✦ プレミアム会員 ✦</span>
+        <p style="font-size:13px;color:rgba(250,247,242,.7);margin-top:6px;">全機能がご利用いただけます</p>
+      </div>`;
+  }
+});
 const yearSel=document.getElementById('dobYear'),monthSel=document.getElementById('dobMonth'),daySel=document.getElementById('dobDay');
 const curYear=new Date().getFullYear();
 for(let y=curYear-10;y>=1930;y--){const o=document.createElement('option');o.value=y;o.textContent=y+'年';yearSel.appendChild(o);}
@@ -855,7 +852,17 @@ function analyze(){
   if(!selectedFile)return;
   const realAge=calcRealAge();
   if(realAge<10||realAge>100){alert('正しい生年月日を入力してください');return;}
-  document.getElementById('uploadSection').style.display='none';
+
+  // 無料版：月3回制限
+  if(!isPremium()){
+    const count=getDiagCount();
+    if(count>=3){
+      alert('無料版は月3回まで診断できます。\nプレミアムプランにアップグレードすると無制限でご利用いただけます。');
+      openModal();
+      return;
+    }
+    incDiagCount();
+  }  document.getElementById('uploadSection').style.display='none';
   document.getElementById('loadingWrap').style.display='block';
   document.getElementById('resultWrap').style.display='none';
   // ローディングメッセージをアニメーション
@@ -1875,6 +1882,67 @@ function deleteKarte(id){
 
 <script src="https://www.paypal.com/sdk/js?client-id=AfUn22zK4UsNWfThHlT_1sqvEi8gmtXHZ4jWMYafWPrX4bBorPFvMY8ZTuZAqTfVXygpK95YmdkZsj-N&vault=true&intent=subscription&components=buttons" data-sdk-integration-source="button-factory"></script>
 <script>
+  // ===== プレミアム状態管理 =====
+  function isPremium(){ return localStorage.getItem('skinagePlan')==='premium'; }
+  function setPremium(subId){
+    localStorage.setItem('skinagePlan','premium');
+    localStorage.setItem('skinagetSubId', subId);
+  }
+
+  // ===== 無料版：月3回制限 =====
+  function getDiagCount(){
+    const key='skinageDiagCount';
+    const data=JSON.parse(localStorage.getItem(key)||'{"count":0,"month":""}');
+    const thisMonth=new Date().toISOString().slice(0,7);
+    if(data.month!==thisMonth) return 0;
+    return data.count;
+  }
+  function incDiagCount(){
+    const key='skinageDiagCount';
+    const thisMonth=new Date().toISOString().slice(0,7);
+    const count=getDiagCount()+1;
+    localStorage.setItem(key,JSON.stringify({count,month:thisMonth}));
+  }
+
+  // ===== PayPalボタン =====
+  const btnStyle={shape:'rect',color:'gold',layout:'vertical',label:'subscribe'};
+
+  paypal.Buttons({
+    style:btnStyle,
+    createSubscription:(d,a)=>a.subscription.create({plan_id:'P-97V00018FX1263937NIJFLMA'}),
+    onApprove:(d)=>{
+      setPremium(d.subscriptionID);
+      closeModal();
+      showSuccess('プレミアムプラン',d.subscriptionID);
+    }
+  }).render('#paypal-button-container-P-97V00018FX1263937NIJFLMA');
+
+  paypal.Buttons({
+    style:btnStyle,
+    createSubscription:(d,a)=>a.subscription.create({plan_id:'P-1HV82856NV161684BNIJFNFY'}),
+    onApprove:(d)=>{
+      setPremium(d.subscriptionID);
+      closeModal();
+      showSuccess('プレミアム年払いプラン',d.subscriptionID);
+    }
+  }).render('#paypal-button-container-P-1HV82856NV161684BNIJFNFY');
+
+  function showSuccess(planName,subId){
+    const msg=document.createElement('div');
+    msg.style.cssText='background:#3A2A24;color:#FAF7F2;border-radius:16px;padding:24px;text-align:center;margin-top:16px;';
+    msg.innerHTML=`
+      <div style="font-size:32px;margin-bottom:10px;">🎉</div>
+      <div style="font-family:Cormorant Garamond,serif;font-size:22px;font-weight:300;margin-bottom:8px;">${planName}へようこそ！</div>
+      <div style="font-size:13px;opacity:0.85;line-height:1.9;">ご登録ありがとうございます。<br>全機能がすぐにご利用いただけます。<br>引き続き美肌ケアをお楽しみください✨</div>
+      <div style="font-size:10px;opacity:0.4;margin-top:10px;">登録ID: ${subId}</div>`;
+    document.getElementById('resultWrap').appendChild(msg);
+    // プレミアム機能バナーを非表示
+    const cta=document.querySelector('.premium-cta');
+    if(cta) cta.style.display='none';
+    msg.scrollIntoView({behavior:'smooth'});
+  }
+</script>
+<script>
   const btnStyle={shape:'rect',color:'gold',layout:'vertical',label:'subscribe'};
   paypal.Buttons({style:btnStyle,createSubscription:(d,a)=>a.subscription.create({plan_id:'P-7A434972FV004594LNIJE5XA'}),onApprove:(d)=>{closeModal();showSuccess('ライトプラン',d.subscriptionID);}}).render('#paypal-button-container-P-7A434972FV004594LNIJE5XA');
   paypal.Buttons({style:btnStyle,createSubscription:(d,a)=>a.subscription.create({plan_id:'P-97V00018FX1263937NIJFLMA'}),onApprove:(d)=>{closeModal();showSuccess('プレミアムプラン',d.subscriptionID);}}).render('#paypal-button-container-P-97V00018FX1263937NIJFLMA');
@@ -1895,38 +1963,6 @@ function deleteKarte(id){
       if(el.childNodes) el.childNodes.forEach(node => {
         if(node.nodeType===3 && node.textContent.includes('クレジットカード登録不要')) node.textContent='';
       });
-    });
-  });
-  ppObserver.observe(document.body, {childList:true, subtree:true});
-</script>
-</body>
-</html>
-<script>
-  const btnStyle={shape:'rect',color:'gold',layout:'vertical',label:'subscribe'};
-  paypal.Buttons({style:btnStyle,createSubscription:(d,a)=>a.subscription.create({plan_id:'P-7A434972FV004594LNIJE5XA'}),onApprove:(d)=>{closeModal();showSuccess('ライトプランへようこそ！',d.subscriptionID);}}).render('#paypal-button-container-P-7A434972FV004594LNIJE5XA');
-  paypal.Buttons({style:btnStyle,createSubscription:(d,a)=>a.subscription.create({plan_id:'P-97V00018FX1263937NIJFLMA'}),onApprove:(d)=>{closeModal();showSuccess('プレミアムプランへようこそ！',d.subscriptionID);}}).render('#paypal-button-container-P-97V00018FX1263937NIJFLMA');
-  paypal.Buttons({style:btnStyle,createSubscription:(d,a)=>a.subscription.create({plan_id:'P-1HV82856NV161684BNIJFNFY'}),onApprove:(d)=>{closeModal();showSuccess('プレミアム年払いプランへようこそ！',d.subscriptionID);}}).render('#paypal-button-container-P-1HV82856NV161684BNIJFNFY');
-  function showSuccess(planName,subId){
-    const msg=document.createElement('div');
-    msg.style.cssText='background:#3A2A24;color:#FAF7F2;border-radius:16px;padding:24px;text-align:center;margin-top:16px;';
-    msg.innerHTML=`<div style="font-size:28px;margin-bottom:10px;">🎉</div>
-      <div style="font-family:Cormorant Garamond,serif;font-size:20px;font-weight:300;margin-bottom:6px;">${planName}へようこそ！</div>
-      <div style="font-size:13px;opacity:0.8;margin-top:10px;line-height:1.8;">ご登録ありがとうございます。<br>全機能がすぐにご利用いただけます。<br>引き続き美肌ケアをお楽しみください✨</div>
-      <div style="font-size:10px;opacity:0.4;margin-top:10px;">登録ID: ${subId}</div>`;
-    document.getElementById('resultWrap').appendChild(msg);
-    msg.scrollIntoView({behavior:'smooth'});
-  }
-
-  const ppObserver = new MutationObserver(() => {
-    document.querySelectorAll('[data-pp-message],[class*="pp-tlc"],[class*="paypal-powered"],[class*="legal-text"],[class*="funding-source-label"]').forEach(el => {
-      if(el.textContent.includes('クレジット') || el.textContent.includes('解約') || el.textContent.includes('登録不要')){
-        el.style.display='none';
-      }
-    });
-    // テキストノードも走査
-    document.querySelectorAll('.modal *').forEach(el => {
-        el.style.display='none';
-      }
     });
   });
   ppObserver.observe(document.body, {childList:true, subtree:true});
