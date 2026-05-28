@@ -743,16 +743,15 @@ function updateDiagNotice(){
 let adminPressTimer=null;
 function startAdminPress(){
   adminPressTimer=setTimeout(()=>{
-    // トップ画面か結果画面かで表示するパネルを切り替え
     const topPanel=document.getElementById('adminPanelTop');
     const resultPanel=document.getElementById('adminPanel');
-    const uploadVisible=document.getElementById('uploadSection').style.display!=='none';
-    if(uploadVisible && topPanel){
-      topPanel.style.display='block';
-      topPanel.scrollIntoView({behavior:'smooth'});
-    } else if(resultPanel){
+    const resultVisible=document.getElementById('resultWrap').style.display==='block';
+    if(resultVisible && resultPanel){
       resultPanel.style.display='block';
       resultPanel.scrollIntoView({behavior:'smooth'});
+    } else if(topPanel){
+      topPanel.style.display='block';
+      topPanel.scrollIntoView({behavior:'smooth'});
     }
   },3000);
 }
