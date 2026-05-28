@@ -609,6 +609,8 @@
 
     <button class="btn-save" id="saveBtn" onclick="saveToKarte()" style="display:none;">📋 美容カルテに保存する</button>
     <button class="btn-retry" onclick="reset()">もう一度診断する</button>
+    <!-- デバッグ用リセットボタン（テスト後削除）-->
+    <button onclick="resetDiagCount()" style="width:100%;padding:10px;margin-top:8px;background:none;border:1px dashed #ccc;border-radius:10px;font-size:11px;color:#ccc;cursor:pointer;">🔧 診断カウントをリセット（テスト用）</button>
     <p class="notice">画像解析による参考情報です。医療・美容診断ではありません。</p>
     <p style="text-align:center;margin-top:16px;font-size:12px;">
       <a href="tokushoho.html" style="color:#9A8880;text-decoration:none;margin:0 8px;">特定商取引法に基づく表記</a>｜
@@ -822,6 +824,12 @@ function incDiagCount(){
   const count=getDiagCount()+1;
   localStorage.setItem(key,JSON.stringify({count,month:thisMonth}));
 }
+// デバッグ用：カウントリセット（開発時のみ使用）
+function resetDiagCount(){
+  localStorage.removeItem('skinageDiagCount');
+  localStorage.removeItem('skinagePlan');
+  alert('リセット完了！再度診断できます。');
+}
 
 // ===== アンケート操作 =====
 function selectQ(groupId, btn) {
@@ -928,7 +936,8 @@ function analyze(){
       return;
     }
     incDiagCount();
-  }  document.getElementById('uploadSection').style.display='none';
+  }
+  document.getElementById('uploadSection').style.display='none';
   document.getElementById('loadingWrap').style.display='block';
   document.getElementById('resultWrap').style.display='none';
   // ローディングメッセージをアニメーション
