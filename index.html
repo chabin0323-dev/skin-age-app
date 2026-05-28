@@ -341,11 +341,13 @@
         ontouchstart="startAdminPress()" ontouchend="cancelAdminPress()"
         onmousedown="startAdminPress()" onmouseup="cancelAdminPress()">🔑</span>
     </div>
-    <div id="adminPanelTop" style="display:none;background:#fff8f5;border:1px dashed #E8C5B0;border-radius:12px;padding:14px;margin-top:8px;text-align:center;">
-      <div style="font-size:11px;color:var(--muted);margin-bottom:10px;">🔧 管理者メニュー</div>
-      <button onclick="resetDiagCount();updateDiagNotice();" style="padding:8px 16px;background:var(--rose);color:white;border:none;border-radius:8px;font-size:12px;cursor:pointer;margin:4px;">診断カウントをリセット</button>
-      <button onclick="localStorage.removeItem('skinagePlan');alert('プレミアム解除しました');location.reload();" style="padding:8px 16px;background:var(--deep);color:white;border:none;border-radius:8px;font-size:12px;cursor:pointer;margin:4px;">プレミアムを解除</button>
-      <button onclick="document.getElementById('adminPanelTop').style.display='none'" style="padding:8px 16px;background:none;border:1px solid var(--blush);border-radius:8px;font-size:12px;cursor:pointer;margin:4px;color:var(--muted);">閉じる</button>
+    <div id="adminPanelTop" style="display:none;background:#fff8f5;border:1px dashed #E8C5B0;border-radius:12px;padding:16px;margin-top:8px;text-align:center;">
+      <div style="font-size:12px;font-weight:500;color:var(--deep);margin-bottom:12px;">🔧 管理者メニュー</div>
+      <button onclick="resetDiagCount();updateDiagNotice();alert('診断カウントをリセットしました！');" style="width:100%;padding:10px;background:var(--rose);color:white;border:none;border-radius:8px;font-size:13px;cursor:pointer;margin-bottom:8px;">🔄 診断カウントをリセット</button>
+      <button onclick="localStorage.setItem('skinagePlan','premium');unlockAllTabs();alert('プレミアムを有効化しました！全機能が確認できます。');document.getElementById('adminPanelTop').style.display='none';" style="width:100%;padding:10px;background:#2d8a5e;color:white;border:none;border-radius:8px;font-size:13px;cursor:pointer;margin-bottom:8px;">✨ プレミアムを有効化（テスト）</button>
+      <button onclick="localStorage.removeItem('skinagePlan');alert('プレミアムを解除しました！');location.reload();" style="width:100%;padding:10px;background:var(--deep);color:white;border:none;border-radius:8px;font-size:13px;cursor:pointer;margin-bottom:8px;">🔒 プレミアムを解除</button>
+      <button onclick="localStorage.clear();alert('全データをリセットしました！');location.reload();" style="width:100%;padding:10px;background:none;border:1px solid #e88;border-radius:8px;font-size:12px;cursor:pointer;margin-bottom:8px;color:#c44;">⚠️ 全データをリセット</button>
+      <button onclick="document.getElementById('adminPanelTop').style.display='none'" style="width:100%;padding:10px;background:none;border:1px solid var(--blush);border-radius:8px;font-size:12px;cursor:pointer;color:var(--muted);">閉じる</button>
     </div>
   </div>
 
@@ -633,11 +635,13 @@
         ontouchstart="startAdminPress()" ontouchend="cancelAdminPress()"
         onmousedown="startAdminPress()" onmouseup="cancelAdminPress()">🔑</span>
     </div>
-    <div id="adminPanel" style="display:none;background:#fff8f5;border:1px dashed #E8C5B0;border-radius:12px;padding:14px;margin-top:8px;text-align:center;">
-      <div style="font-size:11px;color:var(--muted);margin-bottom:10px;">🔧 管理者メニュー</div>
-      <button onclick="resetDiagCount()" style="padding:8px 16px;background:var(--rose);color:white;border:none;border-radius:8px;font-size:12px;cursor:pointer;margin:4px;">診断カウントをリセット</button>
-      <button onclick="localStorage.removeItem('skinagePlan');alert('プレミアム解除しました');location.reload();" style="padding:8px 16px;background:var(--deep);color:white;border:none;border-radius:8px;font-size:12px;cursor:pointer;margin:4px;">プレミアムを解除</button>
-      <button onclick="document.getElementById('adminPanel').style.display='none'" style="padding:8px 16px;background:none;border:1px solid var(--blush);border-radius:8px;font-size:12px;cursor:pointer;margin:4px;color:var(--muted);">閉じる</button>
+    <div id="adminPanel" style="display:none;background:#fff8f5;border:1px dashed #E8C5B0;border-radius:12px;padding:16px;margin-top:8px;text-align:center;">
+      <div style="font-size:12px;font-weight:500;color:var(--deep);margin-bottom:12px;">🔧 管理者メニュー</div>
+      <button onclick="resetDiagCount();updateDiagNotice();alert('診断カウントをリセットしました！');" style="width:100%;padding:10px;background:var(--rose);color:white;border:none;border-radius:8px;font-size:13px;cursor:pointer;margin-bottom:8px;">🔄 診断カウントをリセット</button>
+      <button onclick="localStorage.setItem('skinagePlan','premium');unlockAllTabs();alert('プレミアムを有効化しました！全機能が確認できます。');document.getElementById('adminPanel').style.display='none';" style="width:100%;padding:10px;background:#2d8a5e;color:white;border:none;border-radius:8px;font-size:13px;cursor:pointer;margin-bottom:8px;">✨ プレミアムを有効化（テスト）</button>
+      <button onclick="localStorage.removeItem('skinagePlan');alert('プレミアムを解除しました！');location.reload();" style="width:100%;padding:10px;background:var(--deep);color:white;border:none;border-radius:8px;font-size:13px;cursor:pointer;margin-bottom:8px;">🔒 プレミアムを解除</button>
+      <button onclick="localStorage.clear();alert('全データをリセットしました！');location.reload();" style="width:100%;padding:10px;background:none;border:1px solid #e88;border-radius:8px;font-size:12px;cursor:pointer;margin-bottom:8px;color:#c44;">⚠️ 全データをリセット</button>
+      <button onclick="document.getElementById('adminPanel').style.display='none'" style="width:100%;padding:10px;background:none;border:1px solid var(--blush);border-radius:8px;font-size:12px;cursor:pointer;color:var(--muted);">閉じる</button>
     </div>
     <p class="notice">画像解析による参考情報です。医療・美容診断ではありません。</p>
     <p style="text-align:center;margin-top:16px;font-size:12px;">
