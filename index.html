@@ -284,10 +284,28 @@
       </div>
     </div>
     <div class="upload-area" id="uploadArea">
-      <input type="file" id="fileInput" accept="image/*" />
+      <input type="file" id="fileInput" accept="image/*" capture="user" />
       <div class="upload-content">
         <div class="upload-icon">
           <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        </div>
+        <!-- 顔ガイド楕円 -->
+        <div style="position:relative;width:160px;height:200px;margin:8px auto 16px;">
+          <svg viewBox="0 0 160 200" style="position:absolute;inset:0;width:100%;height:100%;">
+            <!-- 外側を暗くする -->
+            <defs>
+              <mask id="faceMask">
+                <rect width="160" height="200" fill="white"/>
+                <ellipse cx="80" cy="100" rx="62" ry="82" fill="black"/>
+              </mask>
+            </defs>
+            <rect width="160" height="200" fill="rgba(58,42,36,0.12)" mask="url(#faceMask)" rx="8"/>
+            <!-- 楕円の枠線 -->
+            <ellipse cx="80" cy="100" rx="62" ry="82" fill="none" stroke="#C9856A" stroke-width="2.5" stroke-dasharray="8 4"/>
+            <!-- 顔アイコン（中央に薄く）-->
+            <text x="80" y="108" text-anchor="middle" font-size="48" opacity="0.18">👤</text>
+          </svg>
+          <div style="position:absolute;bottom:-8px;left:0;right:0;text-align:center;font-size:11px;color:var(--rose);letter-spacing:.05em;">顔をここに合わせて</div>
         </div>
         <strong>写真をアップロード</strong>
         <small>JPG · PNG · HEIC 対応</small>
@@ -1020,16 +1038,30 @@ function analyze(){
     checkCtx.drawImage(img,0,0,100,100);
     const checkData=checkCtx.getImageData(0,0,100,100).data;
     let skinPixels=0;
+    let centerSkinPixels=0;
     for(let i=0;i<checkData.length;i+=4){
       const r=checkData[i],g=checkData[i+1],b=checkData[i+2];
-      // 肌色判定：赤みがあり、緑・青より赤が強く、極端に暗くない
-      if(r>80 && r>g*0.85 && r>b*1.1 && (r+g+b)/3>70 && (r+g+b)/3<230){
+      const px=(i/4)%100; // x座標
+      const py=Math.floor(i/4/100); // y座標
+      // 厳密な肌色判定
+      const isSkin = r>95 && g>40 && b>20 &&
+                     r>g && r>b &&
+                     r-g>15 &&
+                     Math.abs(r-g)>15 &&
+                     r<250 && g<220 && b<200 &&
+                     (r+g+b)/3>80;
+      if(isSkin){
         skinPixels++;
+        // 中央エリア（20〜80%）の肌色
+        if(px>20&&px<80&&py>15&&py<85) centerSkinPixels++;
       }
     }
-    const skinRatio=skinPixels/2500; // 100×100=10000ピクセル÷4
-    if(skinRatio<0.08){
-      // 肌色が8%未満 → 顔写真ではない可能性が高い
+    const totalPixels=10000;
+    const skinRatio=skinPixels/totalPixels;
+    const centerRatio=centerSkinPixels/totalPixels;
+
+    // 肌色が全体の15%未満、または中央部に肌色が10%未満 → 顔写真ではない
+    if(skinRatio<0.15 || centerRatio<0.10){
       clearInterval(msgTimer);
       document.getElementById('loadingWrap').style.display='none';
       document.getElementById('uploadSection').style.display='block';
@@ -1040,7 +1072,7 @@ function analyze(){
         if(data.count>0){ data.count--; localStorage.setItem(key,JSON.stringify(data)); }
         updateDiagNotice();
       }
-      alert('⚠️ 顔写真が検出されませんでした。\n\n自撮り写真または顔が写った写真をアップロードしてください。\n（明るい場所での撮影が最適です）');
+      alert('⚠️ 顔写真が検出されませんでした。\n\n✅ 正しい撮影方法：\n・顔が中央に写った自撮り写真\n・明るい場所での撮影\n・顔全体が写るように\n\nもう一度写真を選んでください。');
       return;
     }
     setTimeout(()=>{clearInterval(msgTimer);showResult(analyzeImage(img,realAge));},3000);
