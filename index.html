@@ -335,11 +335,10 @@
       無料版は<strong style="color:var(--rose);">月3回まで</strong>診断できます。<br>
       <span id="diagCountDisplay"></span>
     </div>
-    <!-- 管理者トリガー（小さな鍵アイコン・長押し3秒）-->
+    <!-- 管理者トリガー（🔑を5回タップで表示）-->
     <div style="text-align:center;margin-top:12px;">
-      <span id="adminTriggerTop" style="font-size:12px;color:var(--blush);opacity:.3;user-select:none;cursor:default;padding:8px 20px;"
-        ontouchstart="startAdminPress()" ontouchend="cancelAdminPress()"
-        onmousedown="startAdminPress()" onmouseup="cancelAdminPress()">🔑</span>
+      <span id="adminTriggerTop" style="font-size:14px;color:var(--blush);opacity:.25;user-select:none;cursor:pointer;padding:10px 24px;display:inline-block;"
+        onclick="countAdminTap('Top')">🔑</span>
     </div>
     <div id="adminPanelTop" style="display:none;background:#fff8f5;border:1px dashed #E8C5B0;border-radius:12px;padding:16px;margin-top:8px;text-align:center;">
       <div style="font-size:12px;font-weight:500;color:var(--deep);margin-bottom:12px;">🔧 管理者メニュー</div>
@@ -631,9 +630,8 @@
     <button class="btn-retry" onclick="reset()">もう一度診断する</button>
     <!-- 管理者用リセットボタン（長押しで表示）-->
     <div id="adminArea" style="text-align:center;margin-top:8px;">
-      <span id="adminTrigger" style="font-size:12px;color:var(--blush);opacity:.3;user-select:none;cursor:default;padding:8px 20px;" 
-        ontouchstart="startAdminPress()" ontouchend="cancelAdminPress()"
-        onmousedown="startAdminPress()" onmouseup="cancelAdminPress()">🔑</span>
+      <span id="adminTrigger" style="font-size:14px;color:var(--blush);opacity:.25;user-select:none;cursor:pointer;padding:10px 24px;display:inline-block;"
+        onclick="countAdminTap('Result')">🔑</span>
     </div>
     <div id="adminPanel" style="display:none;background:#fff8f5;border:1px dashed #E8C5B0;border-radius:12px;padding:16px;margin-top:8px;text-align:center;">
       <div style="font-size:12px;font-weight:500;color:var(--deep);margin-bottom:12px;">🔧 管理者メニュー</div>
@@ -739,24 +737,22 @@ function updateDiagNotice(){
     countEl.innerHTML=`今月の残り回数：<strong style="color:var(--rose);">${remaining}回</strong>`;
   }
 }
-// ===== 管理者パネル（長押し3秒で表示）=====
-let adminPressTimer=null;
-function startAdminPress(){
-  adminPressTimer=setTimeout(()=>{
-    const topPanel=document.getElementById('adminPanelTop');
-    const resultPanel=document.getElementById('adminPanel');
-    const resultVisible=document.getElementById('resultWrap').style.display==='block';
-    if(resultVisible && resultPanel){
-      resultPanel.style.display='block';
-      resultPanel.scrollIntoView({behavior:'smooth'});
-    } else if(topPanel){
-      topPanel.style.display='block';
-      topPanel.scrollIntoView({behavior:'smooth'});
+// ===== 管理者パネル（🔑を5回タップで表示）=====
+let adminTapCount={Top:0, Result:0};
+let adminTapTimer={Top:null, Result:null};
+function countAdminTap(screen){
+  adminTapCount[screen]++;
+  if(adminTapTimer[screen]) clearTimeout(adminTapTimer[screen]);
+  adminTapTimer[screen]=setTimeout(()=>{ adminTapCount[screen]=0; },2000);
+  if(adminTapCount[screen]>=5){
+    adminTapCount[screen]=0;
+    const panelId = screen==='Top' ? 'adminPanelTop' : 'adminPanel';
+    const panel=document.getElementById(panelId);
+    if(panel){
+      panel.style.display='block';
+      panel.scrollIntoView({behavior:'smooth'});
     }
-  },3000);
-}
-function cancelAdminPress(){
-  if(adminPressTimer){ clearTimeout(adminPressTimer); adminPressTimer=null; }
+  }
 }
 
 function requirePremium(){
@@ -1016,7 +1012,39 @@ function analyze(){
   const msgEl=document.getElementById('loadingText');
   const msgTimer=setInterval(()=>{mi=(mi+1)%msgs.length;msgEl.textContent=msgs[mi];},600);
   const img=new Image();
-  img.onload=()=>{setTimeout(()=>{clearInterval(msgTimer);showResult(analyzeImage(img,realAge));},3000);};
+  img.onload=()=>{
+    // ── 顔写真チェック ──
+    const checkCanvas=document.getElementById('analyzeCanvas');
+    checkCanvas.width=100; checkCanvas.height=100;
+    const checkCtx=checkCanvas.getContext('2d');
+    checkCtx.drawImage(img,0,0,100,100);
+    const checkData=checkCtx.getImageData(0,0,100,100).data;
+    let skinPixels=0;
+    for(let i=0;i<checkData.length;i+=4){
+      const r=checkData[i],g=checkData[i+1],b=checkData[i+2];
+      // 肌色判定：赤みがあり、緑・青より赤が強く、極端に暗くない
+      if(r>80 && r>g*0.85 && r>b*1.1 && (r+g+b)/3>70 && (r+g+b)/3<230){
+        skinPixels++;
+      }
+    }
+    const skinRatio=skinPixels/2500; // 100×100=10000ピクセル÷4
+    if(skinRatio<0.08){
+      // 肌色が8%未満 → 顔写真ではない可能性が高い
+      clearInterval(msgTimer);
+      document.getElementById('loadingWrap').style.display='none';
+      document.getElementById('uploadSection').style.display='block';
+      // カウントを戻す
+      if(!isPremium()){
+        const key='skinageDiagCount';
+        const data=JSON.parse(localStorage.getItem(key)||'{"count":0,"month":""}');
+        if(data.count>0){ data.count--; localStorage.setItem(key,JSON.stringify(data)); }
+        updateDiagNotice();
+      }
+      alert('⚠️ 顔写真が検出されませんでした。\n\n自撮り写真または顔が写った写真をアップロードしてください。\n（明るい場所での撮影が最適です）');
+      return;
+    }
+    setTimeout(()=>{clearInterval(msgTimer);showResult(analyzeImage(img,realAge));},3000);
+  };
   img.src=URL.createObjectURL(selectedFile);
 }
 
