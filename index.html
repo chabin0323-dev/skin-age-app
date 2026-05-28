@@ -283,33 +283,39 @@
         <button onclick="resetDob()" style="font-size:11px;color:var(--muted);background:none;border:none;cursor:pointer;text-decoration:underline;">変更する</button>
       </div>
     </div>
-    <div class="upload-area" id="uploadArea">
+    <div class="upload-area" id="uploadArea" style="min-height:320px;">
       <input type="file" id="fileInput" accept="image/*" capture="user" />
-      <div class="upload-content">
-        <div class="upload-icon">
-          <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-        </div>
-        <!-- 顔ガイド楕円 -->
-        <div style="position:relative;width:160px;height:200px;margin:8px auto 16px;">
-          <svg viewBox="0 0 160 200" style="position:absolute;inset:0;width:100%;height:100%;">
-            <!-- 外側を暗くする -->
+      <div class="upload-content" style="padding:24px 16px;">
+        <!-- 顔ガイドイラスト -->
+        <div style="position:relative;width:200px;height:240px;margin:0 auto 16px;">
+          <svg viewBox="0 0 200 240" style="width:100%;height:100%;">
             <defs>
               <mask id="faceMask">
-                <rect width="160" height="200" fill="white"/>
-                <ellipse cx="80" cy="100" rx="62" ry="82" fill="black"/>
+                <rect width="200" height="240" fill="white"/>
+                <ellipse cx="100" cy="118" rx="76" ry="100" fill="black"/>
               </mask>
             </defs>
-            <rect width="160" height="200" fill="rgba(58,42,36,0.12)" mask="url(#faceMask)" rx="8"/>
-            <!-- 楕円の枠線 -->
-            <ellipse cx="80" cy="100" rx="62" ry="82" fill="none" stroke="#C9856A" stroke-width="2.5" stroke-dasharray="8 4"/>
-            <!-- 顔アイコン（中央に薄く）-->
-            <text x="80" y="108" text-anchor="middle" font-size="48" opacity="0.18">👤</text>
+            <rect width="200" height="240" fill="rgba(58,42,36,0.15)" mask="url(#faceMask)" rx="12"/>
+            <ellipse cx="100" cy="118" rx="76" ry="100" fill="rgba(201,133,106,0.08)" stroke="#C9856A" stroke-width="3"/>
+            <path d="M30 60 L30 40 L50 40" fill="none" stroke="#C9856A" stroke-width="3" stroke-linecap="round"/>
+            <path d="M170 60 L170 40 L150 40" fill="none" stroke="#C9856A" stroke-width="3" stroke-linecap="round"/>
+            <path d="M30 180 L30 200 L50 200" fill="none" stroke="#C9856A" stroke-width="3" stroke-linecap="round"/>
+            <path d="M170 180 L170 200 L150 200" fill="none" stroke="#C9856A" stroke-width="3" stroke-linecap="round"/>
+            <text x="100" y="128" text-anchor="middle" font-size="56" opacity="0.15">👤</text>
           </svg>
-          <div style="position:absolute;bottom:-8px;left:0;right:0;text-align:center;font-size:11px;color:var(--rose);letter-spacing:.05em;">顔をここに合わせて</div>
         </div>
-        <strong>写真をアップロード</strong>
-        <small>JPG · PNG · HEIC 対応</small>
-        <small style="display:block;margin-top:6px;font-size:11px;color:#9A8880;">📱 あなたのスマホ内の写真のみ使用。外部送信はしません。</small>
+        <strong style="font-size:14px;color:var(--deep);">顔を画面中央に合わせて撮影</strong>
+        <div style="margin-top:10px;background:var(--light);border-radius:10px;padding:10px 14px;text-align:left;">
+          <div style="font-size:12px;color:var(--deep);line-height:1.9;">
+            📸 カメラが起動したら…<br>
+            ✅ <strong>フロントカメラ（自撮り側）</strong>に切り替えて<br>
+            ✅ 顔を画面の<strong>中央</strong>に<br>
+            ✅ <strong>頭〜あご</strong>まで全体が映るように<br>
+            ✅ <strong>明るい場所</strong>で撮影してください
+          </div>
+        </div>
+        <small style="display:block;margin-top:8px;color:var(--rose);font-size:12px;font-weight:500;">👆 タップしてカメラを起動</small>
+        <small style="display:block;margin-top:4px;font-size:11px;color:#9A8880;">📱 写真はスマホ内のみ使用。外部送信なし。</small>
       </div>
     </div>
     <div id="previewWrap">
