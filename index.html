@@ -334,6 +334,18 @@
       無料版は<strong style="color:var(--rose);">月3回まで</strong>診断できます。<br>
       <span id="diagCountDisplay"></span>
     </div>
+    <!-- 管理者トリガー（透明・長押し3秒）-->
+    <div style="text-align:center;margin-top:12px;">
+      <span id="adminTriggerTop" style="font-size:10px;color:transparent;user-select:none;cursor:default;padding:8px 20px;"
+        ontouchstart="startAdminPress()" ontouchend="cancelAdminPress()"
+        onmousedown="startAdminPress()" onmouseup="cancelAdminPress()">・・・</span>
+    </div>
+    <div id="adminPanelTop" style="display:none;background:#fff8f5;border:1px dashed #E8C5B0;border-radius:12px;padding:14px;margin-top:8px;text-align:center;">
+      <div style="font-size:11px;color:var(--muted);margin-bottom:10px;">🔧 管理者メニュー</div>
+      <button onclick="resetDiagCount();updateDiagNotice();" style="padding:8px 16px;background:var(--rose);color:white;border:none;border-radius:8px;font-size:12px;cursor:pointer;margin:4px;">診断カウントをリセット</button>
+      <button onclick="localStorage.removeItem('skinagePlan');alert('プレミアム解除しました');location.reload();" style="padding:8px 16px;background:var(--deep);color:white;border:none;border-radius:8px;font-size:12px;cursor:pointer;margin:4px;">プレミアムを解除</button>
+      <button onclick="document.getElementById('adminPanelTop').style.display='none'" style="padding:8px 16px;background:none;border:1px solid var(--blush);border-radius:8px;font-size:12px;cursor:pointer;margin:4px;color:var(--muted);">閉じる</button>
+    </div>
   </div>
 
   <div id="loadingWrap">
@@ -726,8 +738,17 @@ function updateDiagNotice(){
 let adminPressTimer=null;
 function startAdminPress(){
   adminPressTimer=setTimeout(()=>{
-    document.getElementById('adminPanel').style.display='block';
-    document.getElementById('adminPanel').scrollIntoView({behavior:'smooth'});
+    // トップ画面か結果画面かで表示するパネルを切り替え
+    const topPanel=document.getElementById('adminPanelTop');
+    const resultPanel=document.getElementById('adminPanel');
+    const uploadVisible=document.getElementById('uploadSection').style.display!=='none';
+    if(uploadVisible && topPanel){
+      topPanel.style.display='block';
+      topPanel.scrollIntoView({behavior:'smooth'});
+    } else if(resultPanel){
+      resultPanel.style.display='block';
+      resultPanel.scrollIntoView({behavior:'smooth'});
+    }
   },3000);
 }
 function cancelAdminPress(){
