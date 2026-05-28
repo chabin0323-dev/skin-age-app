@@ -801,6 +801,28 @@ document.getElementById('changeBtn').addEventListener('click',()=>{fileInput.val
 
 function clamp(v,mn,mx){return Math.min(mx,Math.max(mn,v));}
 
+// ===== プレミアム状態管理 =====
+function isPremium(){ return localStorage.getItem('skinagePlan')==='premium'; }
+function setPremium(subId){
+  localStorage.setItem('skinagePlan','premium');
+  localStorage.setItem('skinageSubId',subId);
+}
+
+// ===== 無料版：月3回制限 =====
+function getDiagCount(){
+  const key='skinageDiagCount';
+  const data=JSON.parse(localStorage.getItem(key)||'{"count":0,"month":""}');
+  const thisMonth=new Date().toISOString().slice(0,7);
+  if(data.month!==thisMonth) return 0;
+  return data.count;
+}
+function incDiagCount(){
+  const key='skinageDiagCount';
+  const thisMonth=new Date().toISOString().slice(0,7);
+  const count=getDiagCount()+1;
+  localStorage.setItem(key,JSON.stringify({count,month:thisMonth}));
+}
+
 // ===== アンケート操作 =====
 function selectQ(groupId, btn) {
   document.querySelectorAll('#'+groupId+' .q-btn').forEach(b=>b.classList.remove('active'));
@@ -1926,28 +1948,6 @@ function deleteKarte(id){
 
 <script src="https://www.paypal.com/sdk/js?client-id=AfUn22zK4UsNWfThHlT_1sqvEi8gmtXHZ4jWMYafWPrX4bBorPFvMY8ZTuZAqTfVXygpK95YmdkZsj-N&vault=true&intent=subscription&components=buttons" data-sdk-integration-source="button-factory"></script>
 <script>
-  // ===== プレミアム状態管理 =====
-  function isPremium(){ return localStorage.getItem('skinagePlan')==='premium'; }
-  function setPremium(subId){
-    localStorage.setItem('skinagePlan','premium');
-    localStorage.setItem('skinagetSubId', subId);
-  }
-
-  // ===== 無料版：月3回制限 =====
-  function getDiagCount(){
-    const key='skinageDiagCount';
-    const data=JSON.parse(localStorage.getItem(key)||'{"count":0,"month":""}');
-    const thisMonth=new Date().toISOString().slice(0,7);
-    if(data.month!==thisMonth) return 0;
-    return data.count;
-  }
-  function incDiagCount(){
-    const key='skinageDiagCount';
-    const thisMonth=new Date().toISOString().slice(0,7);
-    const count=getDiagCount()+1;
-    localStorage.setItem(key,JSON.stringify({count,month:thisMonth}));
-  }
-
   // ===== PayPalボタン =====
   const btnStyle={shape:'rect',color:'gold',layout:'vertical',label:'subscribe'};
 
