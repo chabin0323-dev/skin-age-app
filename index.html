@@ -355,7 +355,7 @@
     </div>
     <button class="btn-primary" id="analyzeBtn" disabled onclick="analyze()">診断する</button>
     <!-- 無料版回数表示 -->
-    <div id="freePlanNotice" style="text-align:center;margin-top:10px;font-size:12px;color:var(--muted);line-height:1.7;">
+    <div id="freePlanNotice" style="display:none;">
       無料版は<strong style="color:var(--rose);">月3回まで</strong>診断できます。<br>
       <span id="diagCountDisplay"></span>
     </div>
@@ -595,7 +595,7 @@
     <div id="shimmerCta" style="margin-top:16px;text-align:center;">
       <div style="font-size:44px;animation:unlockPulse 1.5s ease-in-out infinite;display:inline-block;margin-bottom:8px;">🔓</div>
       <p style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.7;">グラフ・毛穴・シミ・部位別・成分など<br><strong style="color:var(--deep);">12の機能が今すぐフル解放！</strong></p>
-      <button onclick="openModal()" style="width:100%;padding:20px;border-radius:9999px;background:linear-gradient(90deg,#C9856A,#e8a882,#f5c5a0,#e8a882,#C9856A);background-size:200% auto;animation:shimmerBtn 2s linear infinite;font-family:'DM Sans',sans-serif;font-weight:700;color:white;font-size:16px;border:none;cursor:pointer;box-shadow:0 0 30px rgba(201,133,106,.6),0 0 60px rgba(201,133,106,.3);letter-spacing:.05em;line-height:1.5;">
+      <button onclick="window.open('https://note.com/like_swan6953/membership/join','_blank')" style="width:100%;padding:20px;border-radius:9999px;background:linear-gradient(90deg,#C9856A,#e8a882,#f5c5a0,#e8a882,#C9856A);background-size:200% auto;animation:shimmerBtn 2s linear infinite;font-family:'DM Sans',sans-serif;font-weight:700;color:white;font-size:16px;border:none;cursor:pointer;box-shadow:0 0 30px rgba(201,133,106,.6),0 0 60px rgba(201,133,106,.3);letter-spacing:.05em;line-height:1.5;">
         ✨ 肌ケアをフル解放する<br>
         <span style="font-size:13px;font-weight:400;opacity:.9;">初月無料 → ¥980/月</span>
       </button>
@@ -620,7 +620,7 @@
         <div class="prem-item"><div class="prem-item-icon">💬</div><div class="prem-item-text">美容相談チャット（24時間対応）</div></div>
         <div class="prem-item"><div class="prem-item-icon">🌙</div><div class="prem-item-text">生理周期連携で最適ケア提案</div></div>
       </div>
-      <button class="btn-premium" onclick="openModal()">あなた専用の詳細鑑定をみる</button>
+      <button class="btn-premium" onclick="window.open('https://note.com/like_swan6953/membership/join','_blank')">あなた専用の詳細鑑定をみる</button>
     </div>
     <script>
     // ページ読み込み時にクレジットカード文言を強制削除
@@ -1049,7 +1049,7 @@ function analyze(){
   if(!isPremium()){
     const count=getDiagCount();
     if(count>=3){
-      alert('無料版は月3回まで診断できます。\nプレミアムプランにアップグレードすると無制限でご利用いただけます。');
+      window.open('https://note.com/like_swan6953/membership/join','_blank');
       openModal();
       return;
     }
