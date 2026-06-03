@@ -1045,17 +1045,7 @@ function analyze(){
   const realAge=calcRealAge();
   if(realAge<10||realAge>100){alert('正しい生年月日を入力してください');return;}
 
-  // 無料版：月3回制限
-  if(!isPremium()){
-    const count=getDiagCount();
-    if(count>=3){
-      window.open('https://note.com/like_swan6953/membership/join','_blank');
-      openModal();
-      return;
-    }
-    incDiagCount();
-    updateDiagNotice();
-  }
+  // 月3回制限を無効化（制限なし）
   document.getElementById('uploadSection').style.display='none';
   document.getElementById('loadingWrap').style.display='block';
   document.getElementById('resultWrap').style.display='none';
