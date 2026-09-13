@@ -28,7 +28,7 @@
   .upload-area { border:1px solid var(--blush); border-radius:20px; background:white; overflow:hidden; cursor:pointer; transition:border-color .3s,box-shadow .3s; min-height:200px; display:flex; align-items:center; justify-content:center; position:relative; }
   .upload-area:hover { border-color:var(--rose); box-shadow:0 0 0 4px rgba(201,133,106,.08); }
   .upload-area input { display:none; }
-  .capture-btn { flex:1; padding:13px; border-radius:12px; font-size:13px; font-weight:600; cursor:pointer; font-family:'DM Sans',sans-serif; }
+  .capture-btn { flex:1; padding:13px; border-radius:12px; font-size:13px; font-weight:600; cursor:pointer; font-family:'DM Sans',sans-serif; pointer-events:auto; position:relative; z-index:1; }
   .capture-btn.primary { border:none; background:var(--rose); color:#fff; }
   .capture-btn.secondary { border:1px solid var(--blush); background:#fff; color:var(--deep); }
   .upload-content { text-align:center; padding:36px 24px; pointer-events:none; }
@@ -285,7 +285,7 @@
   .hero-frame .free-badge { border-color:#B892D6 !important; color:#E9A6C4 !important; }
   .hero-frame .dob-card { background:rgba(255,255,255,.05); border:1px solid #4A3E6B; margin:20px 20px 0; }
   .hero-frame .dob-card label { color:#A79ACB !important; }
-  .hero-frame .dob-inputs select { background:rgba(255,255,255,.06); border:1px solid #4A3E6B; color:#F2EEFA !important; }
+  .hero-frame .dob-inputs select { background:rgba(255,255,255,.06); border:1px solid #4A3E6B; color:#F2EEFA !important; color-scheme:dark; }
   .hero-frame .dob-sep { color:#B892D6 !important; }
   .hero-frame #dobSavedText { color:#F2EEFA !important; }
   .hero-frame .upload-area { background:linear-gradient(150deg,#3A2E5C,#7A4F97,#C97D93); border:1px solid rgba(255,255,255,.3); margin:16px 20px 0; border-radius:16px; }
@@ -295,6 +295,7 @@
   .hero-frame .upload-content div[style*="background:var(--light)"] { background:rgba(255,255,255,.12) !important; }
   .hero-frame .upload-content ellipse.guide-inner { stroke:#F0C878 !important; fill:rgba(255,255,255,.12) !important; }
   .hero-frame .upload-content ellipse.guide-outer { stroke:#F0C878 !important; fill:none !important; }
+  .hero-frame .upload-content .guide-tap-label { fill:#F0C878 !important; }
   .hero-frame .upload-content path { stroke:#F0C878 !important; }
   .hero-frame .upload-content rect { fill:rgba(255,255,255,.08) !important; }
   .hero-frame .privacy-badge { background:rgba(255,255,255,.08) !important; border-color:rgba(240,200,120,.4) !important; }
@@ -344,9 +345,8 @@
         <button onclick="resetDob()" style="font-size:11px;color:var(--muted);background:none;border:none;cursor:pointer;text-decoration:underline;">変更する</button>
       </div>
     </div>
-    <div class="upload-area" id="uploadArea" style="min-height:320px;cursor:default;">
+    <div class="upload-area" id="uploadArea" style="min-height:320px;cursor:pointer;">
       <input type="file" id="fileInput" accept="image/*" />
-      <input type="file" id="fileInputCamera" accept="image/*" capture="user" />
       <div class="upload-content" style="padding:24px 16px;">
         <!-- 顔ガイドイラスト -->
         <div style="position:relative;width:200px;height:240px;margin:0 auto 16px;">
@@ -365,6 +365,7 @@
             <path d="M22 174 L22 206 L54 206" fill="none" stroke="#C9856A" stroke-width="6" stroke-linecap="round"/>
             <path d="M178 174 L178 206 L146 206" fill="none" stroke="#C9856A" stroke-width="6" stroke-linecap="round"/>
             <text x="100" y="128" text-anchor="middle" font-size="56" opacity="0.15">👤</text>
+            <text class="guide-tap-label" x="100" y="185" text-anchor="middle" font-size="14" font-weight="600" fill="#C9856A">👆 ここをタップ</text>
           </svg>
         </div>
         <strong style="font-size:14px;color:var(--deep);">顔を画面中央に合わせて撮影</strong>
@@ -376,10 +377,6 @@
             ✅ <strong>頭〜あご</strong>まで全体が映るように<br>
             ✅ <strong>明るい場所</strong>で撮影してください
           </div>
-        </div>
-        <div style="display:flex;gap:8px;margin-top:14px;">
-          <button type="button" id="btnCamera" class="capture-btn primary">📷 その場で撮影</button>
-          <button type="button" id="btnGallery" class="capture-btn secondary">🖼 アルバムから選ぶ</button>
         </div>
         <div class="privacy-badge" style="display:flex;align-items:center;justify-content:center;gap:6px;margin-top:12px;background:rgba(45,138,94,0.12);border:1px solid rgba(45,138,94,0.4);border-radius:99px;padding:9px 14px;">
           <span style="font-size:15px;line-height:1;">🔒</span>
@@ -983,7 +980,7 @@ function closeModalBg(e){ if(e.target===document.getElementById('modalBg')) clos
 
 // ===== 画像アップロード =====
 let selectedFile=null;
-const fileInput=document.getElementById('fileInput'),fileInputCamera=document.getElementById('fileInputCamera'),previewWrap=document.getElementById('previewWrap'),
+const fileInput=document.getElementById('fileInput'),previewWrap=document.getElementById('previewWrap'),
       previewImg=document.getElementById('previewImg'),uploadArea=document.getElementById('uploadArea'),
       analyzeBtn=document.getElementById('analyzeBtn');
 function handleFileSelected(e){
@@ -995,7 +992,6 @@ function handleFileSelected(e){
   document.getElementById('resultWrap').style.display='none';
 }
 fileInput.addEventListener('change',handleFileSelected);
-fileInputCamera.addEventListener('change',handleFileSelected);
 const isAndroid=/Android/i.test(navigator.userAgent);
 let androidStream=null;
 function openAndroidCamera(){
@@ -1004,8 +1000,8 @@ function openAndroidCamera(){
     document.getElementById('androidCameraVideo').srcObject=stream;
     document.getElementById('androidCameraModal').style.display='block';
   }).catch(()=>{
-    // カメラ映像を取得できない場合は、従来のcapture方式にフォールバック
-    fileInputCamera.value='';fileInputCamera.click();
+    // カメラ映像を取得できない場合は、通常のファイル選択にフォールバック
+    fileInput.value='';fileInput.click();
   });
 }
 function closeAndroidCamera(){
@@ -1025,11 +1021,10 @@ document.getElementById('androidCameraShutter').addEventListener('click',()=>{
     handleFileSelected({target:{files:[file]}});
   },'image/jpeg',0.92);
 });
-document.getElementById('btnCamera').addEventListener('click',()=>{
+uploadArea.addEventListener('click',()=>{
   if(isAndroid){ openAndroidCamera(); }
-  else { fileInputCamera.value=''; fileInputCamera.click(); } // iPhone等はこれまで通り
+  else { fileInput.value=''; fileInput.click(); }
 });
-document.getElementById('btnGallery').addEventListener('click',()=>{fileInput.value='';fileInput.click();});
 document.getElementById('changeBtn').addEventListener('click',()=>{fileInput.value='';fileInput.click();});
 
 function clamp(v,mn,mx){return Math.min(mx,Math.max(mn,v));}
@@ -1106,17 +1101,10 @@ function analyzeImage(img,realAge){
   for(let i=0,p=0;i<data.length;i+=4,p++)rbVarSum+=(data[i]-data[i+2]-avgRB)**2;
   const rbStd=Math.sqrt(rbVarSum/total),darkPenalty=Math.max(0,(160-avgBright)/160);
 
-  // ── 画像固有シード（写真ごとに変化。同じ日でも人によって変わる）──
+  // ── 画像固有シード（同じ写真なら必ず同じ結果になるよう、日付・時間帯には依存させない）──
   let imgHash=0;
   for(let i=0;i<data.length;i+=397){ imgHash=(imgHash*33+data[i])%1000003; }
-  const today=new Date();
-  const dateSeed=today.getFullYear()*10000+(today.getMonth()+1)*100+today.getDate();
-  const combinedSeed=dateSeed*997+imgHash;
-  const seededRand=(offset)=>(((combinedSeed*1000003+offset*998244353)%10007)/10007-0.5)*2; // -1〜+1
-
-  // ── 時間帯補正（朝は肌回復気味、夜は疲れ気味）──
-  const hour=today.getHours();
-  const timeBonus = hour>=6&&hour<=10 ? 3 : hour>=23||hour<=4 ? -3 : 0;
+  const seededRand=(offset)=>(((imgHash*1000003+offset*998244353)%10007)/10007-0.5)*2; // -1〜+1
 
   // ── アンケート補正（最大+5〜最小-7点）──
   const qBonus=getQuestionBonus(); // +5〜-7の範囲
@@ -1134,15 +1122,15 @@ function analyzeImage(img,realAge){
   const baseS = 82 - spotPenalty*10 - rbPenalty*8 - darkPen*6;
   const baseF = 84 - lcPenalty*10  - stdPenalty*6 - darkPen*5;
 
-  // ── 日付シード±4点 ＋ 時間帯 ＋ アンケート ──
-  const moisture   =Math.round(clamp(baseM +seededRand(1)*6+timeBonus  +qBonus*0.8, 58, 97));
-  const pores      =Math.round(clamp(baseP +seededRand(2)*6+timeBonus*0.6+qBonus*0.5, 58, 96));
-  const spotsScore =Math.round(clamp(baseS +seededRand(3)*6+timeBonus*0.5+qBonus*0.6, 55, 96));
-  const firmness   =Math.round(clamp(baseF +seededRand(4)*6+timeBonus*0.5+qBonus*0.5, 58, 96));
+  // ── 写真固有のブレ ＋ アンケート（日付・時間帯には依存しない）──
+  const moisture   =Math.round(clamp(baseM +seededRand(1)*6+qBonus*0.8, 58, 97));
+  const pores      =Math.round(clamp(baseP +seededRand(2)*6+qBonus*0.5, 58, 96));
+  const spotsScore =Math.round(clamp(baseS +seededRand(3)*6+qBonus*0.6, 55, 96));
+  const firmness   =Math.round(clamp(baseF +seededRand(4)*6+qBonus*0.5, 58, 96));
 
   // ── 肌年齢：写真の質が良いほど若く出る。若返り方向を基本線に ──
   const qualityPenalty=(stdPenalty+lcPenalty+spotPenalty+rbPenalty+darkPen)/5; // 0〜1
-  let ageBias=Math.round(-4 + qualityPenalty*7 - qBonus*0.5 + seededRand(5)*2 - (timeBonus>0?1:0));
+  let ageBias=Math.round(-4 + qualityPenalty*7 - qBonus*0.5 + seededRand(5)*2);
   ageBias=clamp(ageBias,-6,6);
   const skinAge=clamp(realAge+ageBias, Math.max(10, realAge-6), realAge+6);
   const diff=skinAge-realAge;
@@ -1155,7 +1143,7 @@ function analyzeImage(img,realAge){
   else if(diff<=4){tagline='やや老化サインが見られます';comment=`実年齢より${diff}歳上の肌年齢です。${qLabel}美白ケアと保湿を強化することで改善が期待できます。`;}
   else if(diff<=6){tagline='エイジングサインが目立ちます';comment=`実年齢より${diff}歳上の肌年齢です。${qLabel}パーソナルケアプランで着実な改善を目指しましょう。`;}
   else{tagline='集中的なケアが必要な状態です';comment=`実年齢より${diff}歳上の肌年齢です。${qLabel}専用の集中ケアで今すぐ若返りを始めましょう。`;}
-  return{skinAge,realAge,diff,moisture,pores,spotsScore,firmness,tagline,comment,qBonus,timeBonus};
+  return{skinAge,realAge,diff,moisture,pores,spotsScore,firmness,tagline,comment,qBonus};
 }
 
 function analyze(){
