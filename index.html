@@ -1153,8 +1153,23 @@ function analyze(){
     const skinRatio=skinPixels/totalPixels;
     const centerRatio=centerSkinPixels/totalPixels;
 
-    // 肌色が全体の15%未満、または中央部に肌色が10%未満 → 顔写真ではない
-    if(skinRatio<0.15 || centerRatio<0.10){
+    // ── 追加チェック：中央エリアの質感（顔は目・鼻・口の陰影で必ず細かい濃淡変化がある。
+    //    壁・空・無地の背景は肌色に近い色でも変化がほぼ無いため、これで見分ける）──
+    let edgeSum=0, edgeCount=0;
+    for(let y=16;y<84;y++){
+      for(let x=21;x<78;x++){
+        const i=(y*100+x)*4, iR=(y*100+x+1)*4, iD=((y+1)*100+x)*4;
+        const lum=(checkData[i]+checkData[i+1]+checkData[i+2])/3;
+        const lumR=(checkData[iR]+checkData[iR+1]+checkData[iR+2])/3;
+        const lumD=(checkData[iD]+checkData[iD+1]+checkData[iD+2])/3;
+        edgeSum+=Math.abs(lum-lumR)+Math.abs(lum-lumD);
+        edgeCount+=2;
+      }
+    }
+    const avgEdge=edgeSum/edgeCount;
+
+    // 肌色が全体の15%未満、中央部に肌色が10%未満、または中央の質感変化が乏しい（無地の背景）→ 顔写真ではない
+    if(skinRatio<0.15 || centerRatio<0.10 || avgEdge<3.2){
       clearInterval(msgTimer);
       document.getElementById('loadingWrap').style.display='none';
       document.getElementById('uploadSection').style.display='block';
